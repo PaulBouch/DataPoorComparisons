@@ -1,0 +1,6 @@
+Cod in Divisions VIIe-k, proportion mature,WGCSE18								
+1	6								
+1971	2017								
+1	10								
+2									
+0	0.39	0.87	0.93	1	1	1	1	1	1

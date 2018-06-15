@@ -1,0 +1,6 @@
+Cod in Divisions VIIe-k, natural mortality,WKROUND2018
+1	5
+1971	2017
+1	10
+2	
+0.512 0.368 0.304 0.269 0.247 0.233 0.223 0.216 0.210 0.207
