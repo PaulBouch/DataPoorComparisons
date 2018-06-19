@@ -54,7 +54,7 @@ results_resilience_BSM = write.results(results_resilience_BSM, ref_high)
 results_resilience_BSM = setNames(results_resilience_BSM, c("Resilisience", "r", "r.low", "r.high",
                                                     "k", "k.low", "k.high", 
                                                     "msy", "msy.low", "msy.high",
-                                                    "fmsy", "fmsy.low", "fmsy.high",
-                                                    "bmsy", "bmsy.low", "bmsy.high"))
+                                                    "bmsy", "bmsy.low", "bmsy.high",
+                                                    "fmsy", "fmsy.low", "fmsy.high"))
 
 write.csv(results_resilience_BSM, "Results\\results_resilience_BSM.csv")
