@@ -1,10 +1,8 @@
 library(FLCore)
 library (plyr)
 
-setwd('H:\\SPICT CMSY June\\Data\\Cod_7ek\\Bouch_Data')
-
 ### Load stock object
-cod<-readFLStock("index2018disfinal.txt")
+cod<-readFLStock("Data\\Cod_7_ek\\index2018disfinal.txt")
 units(cod)[1:17] <- as.list(c(rep(c("tonnes","thousands","kg"),4), "NA", "NA", "f", "NA", "NA"))
 
 ### Extract catch data from the stock object
@@ -13,7 +11,7 @@ cod.data = cod.data[ , c(2,7)]
 colnames(cod.data) = c("year", "catch")
 
 #### Cod Survey indices import
-cod.indices <- readFLIndices("SurveyIndex.txt")
+cod.indices <- readFLIndices("Data\\Cod_7_ek\\SurveyIndex.txt")
 names(cod.indices) <- c("FR-OTDEF","IR-FR COMBINED SURVEY")
 
 ### Indicator 1
@@ -25,3 +23,5 @@ cod.data = merge(cod.data, ind1, all.x = T)
 ind2 = as.data.frame(cod.indices [[2]]@index)
 ind2 <- ddply(ind2, ~ year, summarize, index2 = sum(data))
 cod.data = merge(cod.data, ind2, all.x = T)
+
+# write.csv(cod.data, "Data\\Cod_7_ek\\Cod.Data")

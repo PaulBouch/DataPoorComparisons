@@ -47,7 +47,7 @@ plot_dlm(output_high)
 ref_high <- output_high[["ref_pts"]]
 results_resilience = write.results(results_resilience, ref_high)
 
-results_resilience = setNames(results_resilience, c("Resilisience", "r", "r.low", "r.high",
+results_resilience = setNames(results_resilience, c("Resilience", "r", "r.low", "r.high",
                                                "k", "k.low", "k.high", 
                                                "msy", "msy.low", "msy.high",
                                                "fmsy", "fmsy.low", "fmsy.high",
