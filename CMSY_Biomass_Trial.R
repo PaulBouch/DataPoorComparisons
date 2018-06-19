@@ -121,7 +121,7 @@ plot_dlm(output_LL)
 ref_LL <- output_LL[["ref_pts"]]
 results_biomass_CMSY = write.results(results_biomass_CMSY, ref_LL)
 
-results_biomass_CMSY = setNames(results_resilience_CMSY, c("Profile", "Resilience", "r", "r.low", "r.high",
+results_biomass_CMSY = setNames(results_biomass_CMSY, c("Profile", "Resilience", "r", "r.low", "r.high",
                                                            "k", "k.low", "k.high", 
                                                            "msy", "msy.low", "msy.high",
                                                            "fmsy", "fmsy.low", "fmsy.high",
