@@ -1,7 +1,7 @@
 library (datalimited2)
 
 #####  Cod data
-### No abundance indices. Just catch data
+### CMSY with BSM (includes survey index)
 
 ###### Create Results Table ###################
 write.results = function(results, df){
