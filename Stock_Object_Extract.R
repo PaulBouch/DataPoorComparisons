@@ -24,4 +24,4 @@ ind2 = as.data.frame(cod.indices [[2]]@index)
 ind2 <- ddply(ind2, ~ year, summarize, index2 = sum(data))
 cod.data = merge(cod.data, ind2, all.x = T)
 
-# write.csv(cod.data, "Data\\Cod_7_ek\\Cod.Data")
+#write.csv(cod.data, "Data\\Cod_7_ek\\Cod.Data.csv")
