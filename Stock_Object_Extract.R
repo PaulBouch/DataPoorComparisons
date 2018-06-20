@@ -7,6 +7,8 @@ units(cod)[1:17] <- as.list(c(rep(c("tonnes","thousands","kg"),4), "NA", "NA", "
 
 ### Extract catch data from the stock object
 cod.data = as.data.frame(landings(cod))
+# or normally
+# cod.data = as.data.frame(catch(cod))
 cod.data = cod.data[ , c(2,7)]
 colnames(cod.data) = c("year", "catch")
 

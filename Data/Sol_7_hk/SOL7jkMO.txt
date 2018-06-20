@@ -1,0 +1,6 @@
+SOL7jk, WGCSE, COMBSEX, PLUSGROUP, MAT. PROPORTION
+1	6                             
+1993	2017
+2	16
+2
+0.14	0.45	0.88	0.98	1	1	1	1	1	1	1	1	1	1	1

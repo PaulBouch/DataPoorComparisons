@@ -1,0 +1,6 @@
+SOL7jk, WGCSE, COMBSEX, PLUSGROUP, NAT. MORTALITY
+1	5                         
+1993	2017
+2	16
+3
+0.1
