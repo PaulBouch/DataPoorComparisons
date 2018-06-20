@@ -127,4 +127,4 @@ results_biomass_CMSY = setNames(results_biomass_CMSY, c("Profile", "Resilience",
                                                            "fmsy", "fmsy.low", "fmsy.high",
                                                            "bmsy", "bmsy.low", "bmsy.high"))
 
-write.csv(results_biomass_CMSY, "Results\\results_biomass_CMSY.csv")
+write.csv(results_biomass_CMSY, "CMSY Sensitivity Trials\\Results\\results_biomass_CMSY.csv")

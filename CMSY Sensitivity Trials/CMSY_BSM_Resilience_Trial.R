@@ -57,4 +57,4 @@ results_resilience_BSM = setNames(results_resilience_BSM, c("Resilience", "r", "
                                                     "bmsy", "bmsy.low", "bmsy.high",
                                                     "fmsy", "fmsy.low", "fmsy.high"))
 
-write.csv(results_resilience_BSM, "Results\\results_resilience_BSM.csv")
+write.csv(results_resilience_BSM, "CMSY Sensitivity Trials\\Results\\results_resilience_BSM.csv")
