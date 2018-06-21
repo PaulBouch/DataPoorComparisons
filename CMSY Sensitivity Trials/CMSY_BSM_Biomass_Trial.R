@@ -3,6 +3,8 @@ library (datalimited2)
 #####  Cod data
 ### CMSY with BSM (includes survey index)
 
+cod.data = read.csv("Data//Cod_7_ek//Cod.data.csv")
+
 ###### Create Results Table ###################
 write.results = function(results, df){
   output = data.frame(Profile, resilience,
@@ -25,7 +27,7 @@ resilience = "Medium"
 ### H to H Profile
 Profile ="H_H"
 output_HH <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                  btype="biomass", resilience = resilience, 
+                  btype="CPUE", resilience = resilience, 
                   stb.low = 0.5,
                   stb.hi = 0.9,
                   endb.low = 0.5,
@@ -37,7 +39,7 @@ results_biomass_BSM = write.results(results_biomass_BSM, ref_HH)
 ### H to M Profile
 Profile ="H_M"
 output_HM <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                 btype="biomass", resilience = resilience, 
+                 btype="CPUE", resilience = resilience, 
                  stb.low = 0.5,
                  stb.hi = 0.9,
                  endb.low = 0.2,
@@ -49,7 +51,7 @@ results_biomass_BSM = write.results(results_biomass_BSM, ref_HM)
 ### H to L Profile
 Profile ="H_L"
 output_HL <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                 btype="biomass", resilience = resilience, 
+                 btype="CPUE", resilience = resilience, 
                  stb.low = 0.5,
                  stb.hi = 0.9,
                  endb.low = 0.01,
@@ -61,7 +63,7 @@ results_biomass_BSM = write.results(results_biomass_BSM, ref_HL)
 ### M to H Profile
 Profile ="M_H"
 output_MH <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                 btype="biomass", resilience = resilience, 
+                 btype="CPUE", resilience = resilience, 
                  stb.low = 0.2,
                  stb.hi = 0.6,
                  endb.low = 0.5,
@@ -73,7 +75,7 @@ results_biomass_BSM = write.results(results_biomass_BSM, ref_MH)
 ### M to M Profile
 Profile ="M_M"
 output_MM <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                 btype="biomass", resilience = resilience, 
+                 btype="CPUE", resilience = resilience, 
                  stb.low = 0.2,
                  stb.hi = 0.6,
                  endb.low = 0.2,
@@ -85,7 +87,7 @@ results_biomass_BSM = write.results(results_biomass_BSM, ref_MM)
 ### M to L Profile
 Profile ="M_L"
 output_ML <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                 btype="biomass", resilience = resilience, 
+                 btype="CPUE", resilience = resilience, 
                  stb.low = 0.2,
                  stb.hi = 0.6,
                  endb.low = 0.01,
@@ -97,7 +99,7 @@ results_biomass_BSM = write.results(results_biomass_BSM, ref_ML)
 ### L to H Profile
 Profile ="L_H"
 output_LH <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                 btype="biomass", resilience = resilience, 
+                 btype="CPUE", resilience = resilience, 
                  stb.low = 0.01,
                  stb.hi = 0.4,
                  endb.low = 0.5,
@@ -109,7 +111,7 @@ results_biomass_BSM = write.results(results_biomass_BSM, ref_LH)
 ### L to M Profile
 Profile ="L_M"
 output_LM <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                 btype="biomass", resilience = resilience, 
+                 btype="CPUE", resilience = resilience, 
                  stb.low = 0.01,
                  stb.hi = 0.4,
                  endb.low = 0.2,
@@ -121,7 +123,7 @@ results_biomass_BSM = write.results(results_biomass_BSM, ref_LM)
 ### L to L Profile
 Profile ="L_L"
 output_LL <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                 btype="biomass", resilience = resilience, 
+                 btype="CPUE", resilience = resilience, 
                  stb.low = 0.01,
                  stb.hi = 0.4,
                  endb.low = 0.01,

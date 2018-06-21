@@ -3,6 +3,8 @@ library (datalimited2)
 #####  Cod data
 ### CMSY with BSM (includes survey index)
 
+cod.data = read.csv("Data//Cod_7_ek//Cod.data.csv")
+
 ###### Create Results Table ###################
 write.results = function(results, df){
   output = data.frame(resilience,
@@ -22,7 +24,7 @@ results_resilience_BSM = data.frame(matrix(ncol = 16, nrow = 0))
 ### Very Low Resilience
 resilience = "Very low"
 output_vlow <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                     btype="biomass", resilience = resilience)
+                     btype="CPUE", resilience = resilience)
 plot_dlm(output_vlow)
 ref_vlow <- output_vlow[["ref_pts"]]
 results_resilience_BSM = write.results(results_resilience_BSM, ref_vlow)
@@ -30,7 +32,7 @@ results_resilience_BSM = write.results(results_resilience_BSM, ref_vlow)
 ### Low Resilience
 resilience = "Low"
 output_low <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                  btype="biomass", resilience = resilience)
+                  btype="CPUE", resilience = resilience)
 plot_dlm(output_low)
 ref_low <- output_low[["ref_pts"]]
 results_resilience_BSM = write.results(results_resilience_BSM, ref_low)
@@ -38,7 +40,7 @@ results_resilience_BSM = write.results(results_resilience_BSM, ref_low)
 ### Med Resilience
 resilience = "Medium"
 output_med <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                  btype="biomass", resilience = resilience)
+                  btype="CPUE", resilience = resilience)
 plot_dlm(output_med)
 ref_med <- output_med[["ref_pts"]]
 results_resilience_BSM = write.results(results_resilience_BSM, ref_med)
@@ -46,10 +48,19 @@ results_resilience_BSM = write.results(results_resilience_BSM, ref_med)
 ### High Resilience
 resilience = "High"
 output_high <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
-                   btype="biomass", resilience = resilience)
+                   btype="CPUE", resilience = resilience)
 plot_dlm(output_high)
 ref_high <- output_high[["ref_pts"]]
 results_resilience_BSM = write.results(results_resilience_BSM, ref_high)
+
+### Wide Resilience
+resilience = "0.1-1"
+output_wide <- bsm(year=cod.data$year, catch=cod.data$catch, biomass=cod.data$index1,
+                   btype="CPUE", r.low = 0.1, r.hi = 1)
+plot_dlm(output_wide)
+ref_wide <- output_wide[["ref_pts"]]
+results_resilience_BSM = write.results(results_resilience_BSM, ref_wide)
+
 
 results_resilience_BSM = setNames(results_resilience_BSM, c("Resilience", "r", "r.low", "r.high",
                                                     "k", "k.low", "k.high", 
