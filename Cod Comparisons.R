@@ -25,12 +25,12 @@ pb.r.hi = 0.8
 pb.start.r = c(pb.r.low, pb.r.hi)
 
 ### Mean of r range specified by the resilience
-pb.log.r = log(0.5)
+pb.log.r = log(mean(pb.start.r))
 pb.log.r.sd = abs ((pb.log.r - log(pb.r.low))/2)
 
 
 nyr = length(cod.data$year)
-ct <- ma(ct.raw)
+ct <- ma(cod.data$catch)
 
 ######################################################
 ### k Prior and biomass priors for CMSY
@@ -82,10 +82,10 @@ mean.last.cpue    <-mean(cod.data$index1[(nyr-lyr):nyr],na.rm=T) # get mean of C
 gm.start.r      <- exp(mean(log(pb.start.r))) # get geometric mean of prior r range
 if(mean(pb.endbio) >= 0.5) {  # if biomass is high
   q.1           <- mean.last.cpue*0.25*gm.start.r/mean.last.ct
-  q.2           <- mean.last.cpue*0.5*start.r[2]/mean.last.ct
+  q.2           <- mean.last.cpue*0.5*pb.start.r[2]/mean.last.ct
 } else {
   q.1           <- mean.last.cpue*0.5*gm.start.r/mean.last.ct
-  q.2           <- mean.last.cpue*start.r[2]/mean.last.ct
+  q.2           <- mean.last.cpue*pb.start.r[2]/mean.last.ct
   }
 
 pb.q.prior         <- c(q.1,q.2)
