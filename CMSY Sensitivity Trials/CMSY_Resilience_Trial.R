@@ -3,6 +3,8 @@ library (datalimited2)
 #####  Cod data
 ### No abundance indices. Just catch data
 
+cod.data = read.csv("Data//Cod_7_ek//Cod.data.csv")
+
 ###### Create Results Table ###################
 write.results = function(results, df){
   output = data.frame(resilience,
