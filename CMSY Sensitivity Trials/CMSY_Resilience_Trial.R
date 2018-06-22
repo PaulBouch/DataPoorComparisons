@@ -53,7 +53,7 @@ resilience = "0.1-1"
 output_wide <- cmsy2(year=cod.data$year, catch=cod.data$catch, r.low = 0.1, r.hi = 1)
 plot_dlm(output_wide)
 ref_wide <- output_wide[["ref_pts"]]
-results_resilience_BSM = write.results(results_resilience_BSM, ref_wide)
+results_resilience = write.results(results_resilience, ref_wide)
 
 results_resilience = setNames(results_resilience, c("Resilience", "r", "r.low", "r.high",
                                                "k", "k.low", "k.high", 
