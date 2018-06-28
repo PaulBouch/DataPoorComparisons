@@ -3,6 +3,9 @@ library (ggplot2)
 library (gridExtra)
 options(scipen = 999)
 
+results_biomass_CMSY = read.csv("CMSY Sensitivity Trials\\Results\\results_biomass_CMSY.csv")
+results_biomass_BSM = read.csv("CMSY Sensitivity Trials\\Results\\results_biomass_BSM.csv")
+
 results_biomass_CMSY$Method = "CMSY"
 results_biomass_BSM$Method = "BSM"
 
