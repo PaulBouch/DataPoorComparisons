@@ -3,7 +3,7 @@ library(spict)
 options(scipen = 999)
 
 
-data = read.csv("Data//Whg_7_a//Whg.a.Data.csv")
+data = read.csv("Data//Whg_7_a//Whg.a.data.csv")
 data$catch = data$catch / 1000
 
 Stock = "Whg_7_a"
@@ -124,14 +124,21 @@ pb.spict = function(data, Use.n.prior, Use.r.prior, Use.k.prior, Use.q.prior,
   inp$obsC <- data$catch
   inp$timeC <- data$year
   ### Use both abundance index
-  # inp$obsI[[1]] <- data$index1 [30:47]
-  # inp$obsI[[2]] <- data$index2 [33:47]
-  # inp$timeI <- list(data$year[30:47], data$year[33:47])
-  
-  index = data[complete.cases(data$index1), ]
+  index1 = data[complete.cases(data$index1), ]
+  index2 = data[complete.cases(data$index2), ]
+  index3 = data[complete.cases(data$index3), ]
+  index4 = data[complete.cases(data$index4), ]
+  inp$obsI[[1]] <- index1$index1
+  inp$obsI[[2]] <- index2$index2
+  inp$obsI[[3]] <- index3$index3
+  inp$obsI[[4]] <- index4$index4
+#  inp$timeI <- list(index1$year, index2$year)
+  inp$timeI <- list(index1$year, index2$year, index3$year, index4$year)
+    
   ### Use only one abundance index
-  inp$obsI <- index$index1
-  inp$timeI <- index$year
+  # index = data[complete.cases(data$index1), ]
+  # inp$obsI <- index$index1
+  # inp$timeI <- index$year
   
     ### fix n=2
   if (Use.n.prior == "Y"){inp$priors$logn <- c(log(2), 1e-3)}
@@ -180,7 +187,7 @@ pb.spict = function(data, Use.n.prior, Use.r.prior, Use.k.prior, Use.q.prior,
   spict.k = get.par('K', res)
   spictrk = rbind(spict.r, spict.k)
   
-  results_spict = setNames(data.frame(matrix(ncol = 48, nrow = 0)), c("Stock", "Method", "Index","FixN2",
+  results_spict = setNames(data.frame(matrix(ncol = 48, nrow = 0)), c("Stock", "Method", "Index", "FixN2",
                                                                        "Use.r", "Use.k", "Use.q",
                                                                        "Resilience", "Prior.r.low", "Prior.r.hi", 
                                                                        "Prior.k.low", "Prior.k.hi", 
@@ -197,7 +204,7 @@ pb.spict = function(data, Use.n.prior, Use.r.prior, Use.k.prior, Use.q.prior,
                                                                        "ffmsy", "ffmsy.low", "ffmsy.hi",
                                                                        "Converge", "Prior.Warn", "Fit.Warn"))
   
-  results_spict [1,1:18] = c(Stock, "SPICT", 1, Use.n.prior, Use.r.prior,
+  results_spict [1,1:18] = c(Stock, "SPICT", 4, Use.n.prior, Use.r.prior,
                               Use.k.prior, Use.q.prior,
                               pb.resilience, pb.r.low, pb.r.hi, 
                               pb.k.low, pb.k.hi, pb.log.k, pb.log.k.sd,
@@ -234,7 +241,6 @@ pb.spict = function(data, Use.n.prior, Use.r.prior, Use.k.prior, Use.q.prior,
 ###########################################################################################
 ###########################################################################################
 
-
 # CMSY --------------------------------------------------------------------
 cmsy = cmsy2(year = data$year, catch = data$catch, r.low = pb.r.low, r.hi = pb.r.hi)
 plot_dlm (cmsy)
@@ -254,22 +260,22 @@ results_cmsy = data.frame(Stock, "CMSY", 1, "Y", "Y", "Y", "Y",pb.resilience,
                           cmsy_est [ nrow(cmsy_est), c(4:9, 13:15, 19:21)],
                           "",  "", "")
 
-results_cmsy = setNames(results_cmsy, c("Stock", "Method", "Index","FixN2",
+results_cmsy = setNames(results_cmsy, c("Stock", "Method", "Index", "FixN2",
                                         "Use.r", "Use.k", "Use.q",
                                         "Resilience", "Prior.r.low", "Prior.r.hi", 
                                         "Prior.k.low", "Prior.k.hi", 
                                         "Prior.log.k", "Prior.log.k.sd", 
                                         "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", 
-                             "r", "r.low", "r.high",
-                             "k", "k.low", "k.high", 
-                             "msy", "msy.low", "msy.high",
-                             "fmsy", "fmsy.low", "fmsy.high",
-                             "bmsy", "bmsy.low", "bmsy.high",
-                             "b.end", "b.end.low", "b.end.hi",
-                             "bbmsy", "bbmsy.low", "bbmsy.hi",
-                             "f.end", "f.end.low", "f.end.hi",
-                             "ffmsy", "ffmsy.low", "ffmsy.hi",
-                             "Converge", "Prior.Warn", "Fit.Warn"))
+                                        "r", "r.low", "r.high",
+                                        "k", "k.low", "k.high", 
+                                        "msy", "msy.low", "msy.high",
+                                        "fmsy", "fmsy.low", "fmsy.high",
+                                        "bmsy", "bmsy.low", "bmsy.high",
+                                        "b.end", "b.end.low", "b.end.hi",
+                                        "bbmsy", "bbmsy.low", "bbmsy.hi",
+                                        "f.end", "f.end.low", "f.end.hi",
+                                        "ffmsy", "ffmsy.low", "ffmsy.hi",
+                                        "Converge", "Prior.Warn", "Fit.Warn"))
 
 
 # BSM ---------------------------------------------------------------------
@@ -277,8 +283,8 @@ results_cmsy = setNames(results_cmsy, c("Stock", "Method", "Index","FixN2",
 ### Not certain how it uses the k prior? Seems to be used as a start point?
 
 bsm = bsm(year = data$year, catch = data$catch,
-              biomass=data$index1, btype="CPUE",
-              r.low = pb.r.low, r.hi = pb.r.hi)
+          biomass=data$index1, btype="CPUE",
+          r.low = pb.r.low, r.hi = pb.r.hi)
 
 #plot_dlm (bsm)
 bsm_ref = bsm[["ref_pts"]]
@@ -287,32 +293,32 @@ bsm_est = bsm[["ref_ts"]]
 
 
 results_bsm = data.frame(Stock, "BSM", 1, "Y", "Y", "Y", "Y",pb.resilience, 
-                          pb.r.low, pb.r.hi,  pb.k.low, pb.k.hi, 
-                          pb.log.k, pb.log.k.sd, 
-                          pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd, 
-                          bsm_ref[1,2], bsm_ref[1,3], bsm_ref[1,4],
-                          bsm_ref[2,2], bsm_ref[2,3], bsm_ref[2,4],
-                          bsm_ref[3,2], bsm_ref[3,3], bsm_ref[3,4],
-                          bsm_ref[4,2], bsm_ref[4,3], bsm_ref[4,4],
-                          bsm_ref[5,2], bsm_ref[5,3], bsm_ref[5,4],
-                          bsm_est [ nrow(bsm_est), c(4:9, 13:15, 19:21)],
+                         pb.r.low, pb.r.hi,  pb.k.low, pb.k.hi, 
+                         pb.log.k, pb.log.k.sd, 
+                         pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd, 
+                         bsm_ref[1,2], bsm_ref[1,3], bsm_ref[1,4],
+                         bsm_ref[2,2], bsm_ref[2,3], bsm_ref[2,4],
+                         bsm_ref[3,2], bsm_ref[3,3], bsm_ref[3,4],
+                         bsm_ref[4,2], bsm_ref[4,3], bsm_ref[4,4],
+                         bsm_ref[5,2], bsm_ref[5,3], bsm_ref[5,4],
+                         bsm_est [ nrow(bsm_est), c(4:9, 13:15, 19:21)],
                          "", "","")
 
-results_bsm = setNames(results_bsm, c("Stock", "Method", "Index","FixN2",
+results_bsm = setNames(results_bsm, c("Stock", "Method", "Index", "FixN2",
                                       "Use.r", "Use.k", "Use.q",
                                       "Resilience", "Prior.r.low", "Prior.r.hi", 
-                                       "Prior.k.low", "Prior.k.hi", 
-                                       "Prior.log.k", "Prior.log.k.sd", 
-                                       "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", 
-                                        "r", "r.low", "r.high",
-                                        "k", "k.low", "k.high", 
-                                        "msy", "msy.low", "msy.high",
-                                        "bmsy", "bmsy.low", "bmsy.high",
-                                        "fmsy", "fmsy.low", "fmsy.high",
-                                        "b.end", "b.end.low", "b.end.hi",
-                                        "bbmsy", "bbmsy.low", "bbmsy.hi",
-                                        "f.end", "f.end.low", "f.end.hi",
-                                        "ffmsy", "ffmsy.low", "ffmsy.hi",
+                                      "Prior.k.low", "Prior.k.hi", 
+                                      "Prior.log.k", "Prior.log.k.sd", 
+                                      "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", 
+                                      "r", "r.low", "r.high",
+                                      "k", "k.low", "k.high", 
+                                      "msy", "msy.low", "msy.high",
+                                      "bmsy", "bmsy.low", "bmsy.high",
+                                      "fmsy", "fmsy.low", "fmsy.high",
+                                      "b.end", "b.end.low", "b.end.hi",
+                                      "bbmsy", "bbmsy.low", "bbmsy.hi",
+                                      "f.end", "f.end.low", "f.end.hi",
+                                      "ffmsy", "ffmsy.low", "ffmsy.hi",
                                       "Converge", "Prior.Warn", "Fit.Warn"))
 
 results = rbind (results_cmsy, results_bsm)
@@ -392,6 +398,6 @@ results = pb.spict(data, Use.n.prior, Use.r.prior, Use.k.prior, Use.q.prior,
 
 ######################################################################################
 ### Save results ######################################
-write.csv(results, (paste(format("Results\\", Sys.Date(),format="%d%m%y_"), "Results_", Stock,  ".csv") ))
+write.csv(results, (paste(format("Results\\", Sys.Date(),format="%d%m%y_"), "Results_TwoIndex_", Stock,  ".csv") ))
 
           

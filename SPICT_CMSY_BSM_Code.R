@@ -121,22 +121,24 @@ cmsy_ref = cmsy[["ref_pts"]]
 cmsy_est = cmsy[["ref_ts"]]
 
 
-results_cmsy = data.frame(Stock, "CMSY", "Y", pb.resilience, 
-           pb.r.low, pb.r.hi, "Y", pb.k.low, pb.k.hi, 
-           pb.log.k, pb.log.k.sd, "Y",
-           pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd, "Y",
-           cmsy_ref[1,2], cmsy_ref[1,3], cmsy_ref[1,4],
-           cmsy_ref[2,2], cmsy_ref[2,3], cmsy_ref[2,4],
-           cmsy_ref[3,2], cmsy_ref[3,3], cmsy_ref[3,4],
-           cmsy_ref[4,2], cmsy_ref[4,3], cmsy_ref[4,4],
-           cmsy_ref[5,2], cmsy_ref[5,3], cmsy_ref[5,4],
-           cmsy_est [ nrow(cmsy_est), c(4:9, 13:15, 19:21)])
+results_cmsy = data.frame(Stock, "CMSY", "Y", "Y", "Y", "Y",pb.resilience, 
+                          pb.r.low, pb.r.hi,  pb.k.low, pb.k.hi, 
+                          pb.log.k, pb.log.k.sd, 
+                          pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd, 
+                          cmsy_ref[1,2], cmsy_ref[1,3], cmsy_ref[1,4],
+                          cmsy_ref[2,2], cmsy_ref[2,3], cmsy_ref[2,4],
+                          cmsy_ref[3,2], cmsy_ref[3,3], cmsy_ref[3,4],
+                          cmsy_ref[4,2], cmsy_ref[4,3], cmsy_ref[4,4],
+                          cmsy_ref[5,2], cmsy_ref[5,3], cmsy_ref[5,4],
+                          cmsy_est [ nrow(cmsy_est), c(4:9, 13:15, 19:21)],
+                          "",  "", "")
 
-results_cmsy = setNames(results_cmsy, c("Stock", "Method", "FixN2", "Resilience", 
-                             "Prior.r.low", "Prior.r.hi", "Use.r",
-                             "Prior.k.low", "Prior.k.hi", 
-                             "Prior.log.k", "Prior.log.k.sd", "Use.k",
-                             "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", "Use.q",
+results_cmsy = setNames(results_cmsy, c("Stock", "Method", "FixN2",
+                                        "Use.r", "Use.k", "Use.q",
+                                        "Resilience", "Prior.r.low", "Prior.r.hi", 
+                                        "Prior.k.low", "Prior.k.hi", 
+                                        "Prior.log.k", "Prior.log.k.sd", 
+                                        "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", 
                              "r", "r.low", "r.high",
                              "k", "k.low", "k.high", 
                              "msy", "msy.low", "msy.high",
@@ -145,7 +147,8 @@ results_cmsy = setNames(results_cmsy, c("Stock", "Method", "FixN2", "Resilience"
                              "b.end", "b.end.low", "b.end.hi",
                              "bbmsy", "bbmsy.low", "bbmsy.hi",
                              "f.end", "f.end.low", "f.end.hi",
-                             "ffmsy", "ffmsy.low", "ffmsy.hi"))
+                             "ffmsy", "ffmsy.low", "ffmsy.hi",
+                             "Converge", "Prior.Warn", "Fit.Warn"))
 
 # BSM ---------------------------------------------------------------------
 ### This will be using the r prior and q prior
@@ -161,22 +164,24 @@ bsm_est = bsm[["ref_ts"]]
 
 
 
-results_bsm = data.frame(Stock, "CMSY", "Y", pb.resilience, 
-                          pb.r.low, pb.r.hi, "Y", pb.k.low, pb.k.hi, 
-                          pb.log.k, pb.log.k.sd, "Y",
-                          pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd, "Y",
+results_bsm = data.frame(Stock, "BSM", "Y", "Y", "Y", "Y",pb.resilience, 
+                          pb.r.low, pb.r.hi,  pb.k.low, pb.k.hi, 
+                          pb.log.k, pb.log.k.sd, 
+                          pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd, 
                           bsm_ref[1,2], bsm_ref[1,3], bsm_ref[1,4],
                           bsm_ref[2,2], bsm_ref[2,3], bsm_ref[2,4],
                           bsm_ref[3,2], bsm_ref[3,3], bsm_ref[3,4],
                           bsm_ref[4,2], bsm_ref[4,3], bsm_ref[4,4],
                           bsm_ref[5,2], bsm_ref[5,3], bsm_ref[5,4],
-                          bsm_est [ nrow(bsm_est), c(4:9, 13:15, 19:21)])
+                          bsm_est [ nrow(bsm_est), c(4:9, 13:15, 19:21)],
+                         "", "","")
 
-results_bsm = setNames(results_bsm, c("Stock", "Method", "FixN2", "Resilience", 
-                                       "Prior.r.low", "Prior.r.hi", "Use.r",
+results_bsm = setNames(results_bsm, c("Stock", "Method", "FixN2",
+                                      "Use.r", "Use.k", "Use.q",
+                                      "Resilience", "Prior.r.low", "Prior.r.hi", 
                                        "Prior.k.low", "Prior.k.hi", 
-                                       "Prior.log.k", "Prior.log.k.sd", "Use.k",
-                                       "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", "Use.q",
+                                       "Prior.log.k", "Prior.log.k.sd", 
+                                       "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", 
                                         "r", "r.low", "r.high",
                                         "k", "k.low", "k.high", 
                                         "msy", "msy.low", "msy.high",
@@ -185,17 +190,18 @@ results_bsm = setNames(results_bsm, c("Stock", "Method", "FixN2", "Resilience",
                                         "b.end", "b.end.low", "b.end.hi",
                                         "bbmsy", "bbmsy.low", "bbmsy.hi",
                                         "f.end", "f.end.low", "f.end.hi",
-                                        "ffmsy", "ffmsy.low", "ffmsy.hi"))
+                                        "ffmsy", "ffmsy.low", "ffmsy.hi",
+                                      "Converge", "Prior.Warn", "Fit.Warn"))
 
 results = rbind (results_cmsy, results_bsm)
 
-# SPICT Options -------------------------------------------------------------------
-###
+# SPICT Option 1 -------------------------------------------------------------------
+### No priors and n not fixed at 2
 Use.n.prior = "N"
 Use.r.prior = "N"
 Use.q.prior = "N"
 Use.k.prior = "N"
-  
+
 inp <- list()
 inp$obsC <- data$catch
 inp$timeC <- data$year
@@ -217,17 +223,26 @@ if (Use.k.prior == "Y"){inp$priors$logK <- c(pb.log.k, pb.log.k.sd, 1)}
 ### provide prior for q
 if (Use.q.prior == "Y"){inp$priors$logq <- c(pb.log.q, pb.log.q.sd, 1)}
 
-
+assign("last.warning", NULL, envir = baseenv())
 inp <- check.inp(inp)
+
+Prior_warning = warnings()
+
+
 
 #plots the Catch and index 
 plotspict.data(inp)
 
+assign("last.warning", NULL, envir = baseenv())
 # Run the model
 res <- fit.spict(inp)
 
+Fit_warning = warnings()
+
 # What are the calculated values
 summary(res)
+
+Convergence = capture.output(summary(res))[1]
 
 # plot everything
 # plot(res)
@@ -246,35 +261,623 @@ spict.r = get.par('r', res)
 spict.k = get.par('K', res)
 spictrk = rbind(spict.r, spict.k)
 
-results_spict = data.frame(Stock, "SPICT", Use.n.prior ,pb.resilience, 
-                         pb.r.low, pb.r.hi, Use.r.prior,
-                         pb.k.low, pb.k.hi,
-                         pb.log.k, pb.log.k.sd, Use.k.prior,
-                         pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd, Use.q.prior,
-                         spictrk[1,2], spictrk[1,1], spictrk[1,3],
-                         spictrk[2,2], spictrk[2,1], spictrk[2,3],
-                         tab1[3,1], tab1[3,2], tab1[3,3], #msy
-                         tab1[2,1], tab1[2,2], tab1[2,3], #fmsy
-                         tab1[1,1], tab1[1,2], tab1[1,3], #bmsy
-                         tab2[1,1], tab2[1,2], tab2[1,3], # b end
-                         tab2[3,1], tab2[3,2], tab2[3,3], # bbmsy
-                         tab2[2,1], tab2[2,2], tab2[2,3], # f end
-                         tab2[4,1], tab2[4,2], tab2[4,3]) # ffmsy
-                         
+results_spict = data.frame(Stock, "SPICT", Use.n.prior, Use.r.prior,
+                           Use.k.prior, Use.q.prior,
+                           pb.resilience, pb.r.low, pb.r.hi, 
+                           pb.k.low, pb.k.hi, pb.log.k, pb.log.k.sd,
+                           pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd,
+                           spictrk[1,2], spictrk[1,1], spictrk[1,3],
+                           spictrk[2,2], spictrk[2,1], spictrk[2,3],
+                           tab1[3,1], tab1[3,2], tab1[3,3], #msy
+                           tab1[2,1], tab1[2,2], tab1[2,3], #fmsy
+                           tab1[1,1], tab1[1,2], tab1[1,3], #bmsy
+                           tab2[1,1], tab2[1,2], tab2[1,3], # b end
+                           tab2[3,1], tab2[3,2], tab2[3,3], # bbmsy
+                           tab2[2,1], tab2[2,2], tab2[2,3], # f end
+                           tab2[4,1], tab2[4,2], tab2[4,3], # ffmsy
+                           Convergence[1], 
+                           if (length(Prior_warning)== 0){""} else  {names(Prior_warning)[1]},
+                           if (length(Fit_warning)== 0){""} else  {names(Fit_warning)[1]}) 
 
-results_spict = setNames(results_spict, c("Stock", "Method", "FixN2", "Resilience", 
-                                          "Prior.r.low", "Prior.r.hi", "Use.r",
+
+
+results_spict = setNames(results_spict, c("Stock", "Method", "FixN2",
+                                          "Use.r", "Use.k", "Use.q",
+                                          "Resilience", "Prior.r.low", "Prior.r.hi", 
                                           "Prior.k.low", "Prior.k.hi", 
-                                          "Prior.log.k", "Prior.log.k.sd", "Use.k",
-                                          "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", "Use.q",
-                                        "r", "r.low", "r.high",
-                                        "k", "k.low", "k.high", 
-                                        "msy", "msy.low", "msy.high",
-                                        "fmsy", "fmsy.low", "fmsy.high",
-                                        "bmsy", "bmsy.low", "bmsy.high",
-                                        "b.end", "b.end.low", "b.end.hi",
-                                        "bbmsy", "bbmsy.low", "bbmsy.hi",
-                                        "f.end", "f.end.low", "f.end.hi",
-                                        "ffmsy", "ffmsy.low", "ffmsy.hi"))
+                                          "Prior.log.k", "Prior.log.k.sd", 
+                                          "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", 
+                                          "r", "r.low", "r.high",
+                                          "k", "k.low", "k.high", 
+                                          "msy", "msy.low", "msy.high",
+                                          "fmsy", "fmsy.low", "fmsy.high",
+                                          "bmsy", "bmsy.low", "bmsy.high",
+                                          "b.end", "b.end.low", "b.end.hi",
+                                          "bbmsy", "bbmsy.low", "bbmsy.hi",
+                                          "f.end", "f.end.low", "f.end.hi",
+                                          "ffmsy", "ffmsy.low", "ffmsy.hi",
+                                          "Converge", "Prior.Warn", "Fit.Warn"))
 
 results = rbind (results, results_spict)
+
+
+#####################################################################################
+# SPICT Option 2 -------------------------------------------------------------------
+### No priors but n = 2
+Use.n.prior = "Y"
+Use.r.prior = "N"
+Use.q.prior = "N"
+Use.k.prior = "N"
+
+inp <- list()
+inp$obsC <- data$catch
+inp$timeC <- data$year
+### Use both abundance index
+# inp$obsI[[1]] <- data$index1 [30:47]
+# inp$obsI[[2]] <- data$index2 [33:47]
+# inp$timeI <- list(data$year[30:47], data$year[33:47])
+
+### Use only one abundance index
+inp$obsI <- data$index1 [30:47]
+inp$timeI <- data$year[30:47]
+
+### fix n=2
+if (Use.n.prior == "Y"){inp$priors$logn <- c(log(2), 1e-3)}
+### provide r prior
+if (Use.r.prior == "Y"){inp$priors$logr <- c(pb.log.r, pb.log.r.sd, 1)}
+### Does not seem to like having k prior
+if (Use.k.prior == "Y"){inp$priors$logK <- c(pb.log.k, pb.log.k.sd, 1)}
+### provide prior for q
+if (Use.q.prior == "Y"){inp$priors$logq <- c(pb.log.q, pb.log.q.sd, 1)}
+
+assign("last.warning", NULL, envir = baseenv())
+inp <- check.inp(inp)
+
+Prior_warning = warnings()
+
+
+
+#plots the Catch and index 
+plotspict.data(inp)
+
+assign("last.warning", NULL, envir = baseenv())
+# Run the model
+res <- fit.spict(inp)
+
+Fit_warning = warnings()
+
+# What are the calculated values
+summary(res)
+
+Convergence = capture.output(summary(res))[1]
+
+# plot everything
+# plot(res)
+# # Calculate the residuals
+# res <- calc.osa.resid(res)
+# # are the residuals ok?
+# plotspict.diagnostic(res)
+# sumspict.diagnostics(res)
+
+####   Produce the reference value table
+tab1 <- sumspict.srefpoints(res);
+tab1 = as.data.frame(tab1)
+tab2 <- sumspict.states(res);
+tab2 = as.data.frame(tab2)
+spict.r = get.par('r', res)
+spict.k = get.par('K', res)
+spictrk = rbind(spict.r, spict.k)
+
+results_spict = data.frame(Stock, "SPICT", Use.n.prior, Use.r.prior,
+                           Use.k.prior, Use.q.prior,
+                           pb.resilience, pb.r.low, pb.r.hi, 
+                           pb.k.low, pb.k.hi, pb.log.k, pb.log.k.sd,
+                           pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd,
+                           spictrk[1,2], spictrk[1,1], spictrk[1,3],
+                           spictrk[2,2], spictrk[2,1], spictrk[2,3],
+                           tab1[3,1], tab1[3,2], tab1[3,3], #msy
+                           tab1[2,1], tab1[2,2], tab1[2,3], #fmsy
+                           tab1[1,1], tab1[1,2], tab1[1,3], #bmsy
+                           tab2[1,1], tab2[1,2], tab2[1,3], # b end
+                           tab2[3,1], tab2[3,2], tab2[3,3], # bbmsy
+                           tab2[2,1], tab2[2,2], tab2[2,3], # f end
+                           tab2[4,1], tab2[4,2], tab2[4,3], # ffmsy
+                           Convergence[1], 
+                           if (length(Prior_warning)== 0){""} else  {names(Prior_warning)[1]},
+                           if (length(Fit_warning)== 0){""} else  {names(Fit_warning)[1]}) 
+                                               
+
+
+results_spict = setNames(results_spict, c("Stock", "Method", "FixN2",
+                                          "Use.r", "Use.k", "Use.q",
+                                          "Resilience", "Prior.r.low", "Prior.r.hi", 
+                                          "Prior.k.low", "Prior.k.hi", 
+                                          "Prior.log.k", "Prior.log.k.sd", 
+                                          "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", 
+                                          "r", "r.low", "r.high",
+                                          "k", "k.low", "k.high", 
+                                          "msy", "msy.low", "msy.high",
+                                          "fmsy", "fmsy.low", "fmsy.high",
+                                          "bmsy", "bmsy.low", "bmsy.high",
+                                          "b.end", "b.end.low", "b.end.hi",
+                                          "bbmsy", "bbmsy.low", "bbmsy.hi",
+                                          "f.end", "f.end.low", "f.end.hi",
+                                          "ffmsy", "ffmsy.low", "ffmsy.hi",
+                                          "Converge", "Prior.Warn", "Fit.Warn"))
+
+results = rbind (results, results_spict)
+
+
+#####################################################################################
+# SPICT Option 3 -------------------------------------------------------------------
+### r priors and n = 2
+Use.n.prior = "Y"
+Use.r.prior = "Y"
+Use.q.prior = "N"
+Use.k.prior = "N"
+
+inp <- list()
+inp$obsC <- data$catch
+inp$timeC <- data$year
+### Use both abundance index
+# inp$obsI[[1]] <- data$index1 [30:47]
+# inp$obsI[[2]] <- data$index2 [33:47]
+# inp$timeI <- list(data$year[30:47], data$year[33:47])
+
+### Use only one abundance index
+inp$obsI <- data$index1 [30:47]
+inp$timeI <- data$year[30:47]
+
+### fix n=2
+if (Use.n.prior == "Y"){inp$priors$logn <- c(log(2), 1e-3)}
+### provide r prior
+if (Use.r.prior == "Y"){inp$priors$logr <- c(pb.log.r, pb.log.r.sd, 1)}
+### Does not seem to like having k prior
+if (Use.k.prior == "Y"){inp$priors$logK <- c(pb.log.k, pb.log.k.sd, 1)}
+### provide prior for q
+if (Use.q.prior == "Y"){inp$priors$logq <- c(pb.log.q, pb.log.q.sd, 1)}
+
+assign("last.warning", NULL, envir = baseenv())
+inp <- check.inp(inp)
+
+Prior_warning = warnings()
+
+
+
+#plots the Catch and index 
+plotspict.data(inp)
+
+assign("last.warning", NULL, envir = baseenv())
+# Run the model
+res <- fit.spict(inp)
+
+Fit_warning = warnings()
+
+# What are the calculated values
+summary(res)
+
+Convergence = capture.output(summary(res))[1]
+
+# plot everything
+# plot(res)
+# # Calculate the residuals
+# res <- calc.osa.resid(res)
+# # are the residuals ok?
+# plotspict.diagnostic(res)
+# sumspict.diagnostics(res)
+
+####   Produce the reference value table
+tab1 <- sumspict.srefpoints(res);
+tab1 = as.data.frame(tab1)
+tab2 <- sumspict.states(res);
+tab2 = as.data.frame(tab2)
+spict.r = get.par('r', res)
+spict.k = get.par('K', res)
+spictrk = rbind(spict.r, spict.k)
+
+results_spict = data.frame(Stock, "SPICT", Use.n.prior, Use.r.prior,
+                           Use.k.prior, Use.q.prior,
+                           pb.resilience, pb.r.low, pb.r.hi, 
+                           pb.k.low, pb.k.hi, pb.log.k, pb.log.k.sd,
+                           pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd,
+                           spictrk[1,2], spictrk[1,1], spictrk[1,3],
+                           spictrk[2,2], spictrk[2,1], spictrk[2,3],
+                           tab1[3,1], tab1[3,2], tab1[3,3], #msy
+                           tab1[2,1], tab1[2,2], tab1[2,3], #fmsy
+                           tab1[1,1], tab1[1,2], tab1[1,3], #bmsy
+                           tab2[1,1], tab2[1,2], tab2[1,3], # b end
+                           tab2[3,1], tab2[3,2], tab2[3,3], # bbmsy
+                           tab2[2,1], tab2[2,2], tab2[2,3], # f end
+                           tab2[4,1], tab2[4,2], tab2[4,3], # ffmsy
+                           Convergence[1], 
+                           if (length(Prior_warning)== 0){""} else  {names(Prior_warning)[1]},
+                           if (length(Fit_warning)== 0){""} else  {names(Fit_warning)[1]}) 
+
+
+
+results_spict = setNames(results_spict, c("Stock", "Method", "FixN2",
+                                          "Use.r", "Use.k", "Use.q",
+                                          "Resilience", "Prior.r.low", "Prior.r.hi", 
+                                          "Prior.k.low", "Prior.k.hi", 
+                                          "Prior.log.k", "Prior.log.k.sd", 
+                                          "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", 
+                                          "r", "r.low", "r.high",
+                                          "k", "k.low", "k.high", 
+                                          "msy", "msy.low", "msy.high",
+                                          "fmsy", "fmsy.low", "fmsy.high",
+                                          "bmsy", "bmsy.low", "bmsy.high",
+                                          "b.end", "b.end.low", "b.end.hi",
+                                          "bbmsy", "bbmsy.low", "bbmsy.hi",
+                                          "f.end", "f.end.low", "f.end.hi",
+                                          "ffmsy", "ffmsy.low", "ffmsy.hi",
+                                          "Converge", "Prior.Warn", "Fit.Warn"))
+
+results = rbind (results, results_spict)
+
+#####################################################################################
+# SPICT Option 4 -------------------------------------------------------------------
+### r and k priors and n = 2
+Use.n.prior = "Y"
+Use.r.prior = "Y"
+Use.q.prior = "N"
+Use.k.prior = "Y"
+
+
+inp <- list()
+inp$obsC <- data$catch
+inp$timeC <- data$year
+### Use both abundance index
+# inp$obsI[[1]] <- data$index1 [30:47]
+# inp$obsI[[2]] <- data$index2 [33:47]
+# inp$timeI <- list(data$year[30:47], data$year[33:47])
+
+### Use only one abundance index
+inp$obsI <- data$index1 [30:47]
+inp$timeI <- data$year[30:47]
+
+### fix n=2
+if (Use.n.prior == "Y"){inp$priors$logn <- c(log(2), 1e-3)}
+### provide r prior
+if (Use.r.prior == "Y"){inp$priors$logr <- c(pb.log.r, pb.log.r.sd, 1)}
+### Does not seem to like having k prior
+if (Use.k.prior == "Y"){inp$priors$logK <- c(pb.log.k, pb.log.k.sd, 1)}
+### provide prior for q
+if (Use.q.prior == "Y"){inp$priors$logq <- c(pb.log.q, pb.log.q.sd, 1)}
+
+assign("last.warning", NULL, envir = baseenv())
+inp <- check.inp(inp)
+
+Prior_warning = warnings()
+
+
+
+#plots the Catch and index 
+plotspict.data(inp)
+
+assign("last.warning", NULL, envir = baseenv())
+# Run the model
+res2 <- fit.spict(inp)
+
+
+Fit_warning = warnings()
+
+# What are the calculated values
+summary(res2)
+
+Convergence = capture.output(summary(res))[1]
+
+# plot everything
+# plot(res)
+# # Calculate the residuals
+# res <- calc.osa.resid(res)
+# # are the residuals ok?
+# plotspict.diagnostic(res)
+# sumspict.diagnostics(res)
+
+sumspict.srefpoints(res2)
+
+####   Produce the reference value table
+tab3 <- sumspict.srefpoints(res2)
+tab1 = as.data.frame(tab1)
+tab2 <- sumspict.states(res2);
+tab2 = as.data.frame(tab2)
+spict.r = get.par('r', res)
+spict.k = get.par('K', res)
+spictrk = rbind(spict.r, spict.k)
+
+results_spict = data.frame(Stock, "SPICT", Use.n.prior, Use.r.prior,
+                           Use.k.prior, Use.q.prior,
+                           pb.resilience, pb.r.low, pb.r.hi, 
+                           pb.k.low, pb.k.hi, pb.log.k, pb.log.k.sd,
+                           pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd,
+                           spictrk[1,2], spictrk[1,1], spictrk[1,3],
+                           spictrk[2,2], spictrk[2,1], spictrk[2,3],
+                           tab1[3,1], tab1[3,2], tab1[3,3], #msy
+                           tab1[2,1], tab1[2,2], tab1[2,3], #fmsy
+                           tab1[1,1], tab1[1,2], tab1[1,3], #bmsy
+                           tab2[1,1], tab2[1,2], tab2[1,3], # b end
+                           tab2[3,1], tab2[3,2], tab2[3,3], # bbmsy
+                           tab2[2,1], tab2[2,2], tab2[2,3], # f end
+                           tab2[4,1], tab2[4,2], tab2[4,3], # ffmsy
+                           Convergence[1], 
+                           if (length(Prior_warning)== 0){""} else  {names(Prior_warning)[1]},
+                           if (length(Fit_warning)== 0){""} else  {names(Fit_warning)[1]}) 
+
+
+
+results_spict = setNames(results_spict, c("Stock", "Method", "FixN2",
+                                          "Use.r", "Use.k", "Use.q",
+                                          "Resilience", "Prior.r.low", "Prior.r.hi", 
+                                          "Prior.k.low", "Prior.k.hi", 
+                                          "Prior.log.k", "Prior.log.k.sd", 
+                                          "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", 
+                                          "r", "r.low", "r.high",
+                                          "k", "k.low", "k.high", 
+                                          "msy", "msy.low", "msy.high",
+                                          "fmsy", "fmsy.low", "fmsy.high",
+                                          "bmsy", "bmsy.low", "bmsy.high",
+                                          "b.end", "b.end.low", "b.end.hi",
+                                          "bbmsy", "bbmsy.low", "bbmsy.hi",
+                                          "f.end", "f.end.low", "f.end.hi",
+                                          "ffmsy", "ffmsy.low", "ffmsy.hi",
+                                          "Converge", "Prior.Warn", "Fit.Warn"))
+
+results = rbind (results, results_spict)
+
+#####################################################################################
+# SPICT Option 5 -------------------------------------------------------------------
+### r and q priors and n = 2
+Use.n.prior = "Y"
+Use.r.prior = "Y"
+Use.q.prior = "Y"
+Use.k.prior = "N"
+
+
+inp <- list()
+inp$obsC <- data$catch
+inp$timeC <- data$year
+### Use both abundance index
+# inp$obsI[[1]] <- data$index1 [30:47]
+# inp$obsI[[2]] <- data$index2 [33:47]
+# inp$timeI <- list(data$year[30:47], data$year[33:47])
+
+### Use only one abundance index
+inp$obsI <- data$index1 [30:47]
+inp$timeI <- data$year[30:47]
+
+### fix n=2
+if (Use.n.prior == "Y"){inp$priors$logn <- c(log(2), 1e-3)}
+### provide r prior
+if (Use.r.prior == "Y"){inp$priors$logr <- c(pb.log.r, pb.log.r.sd, 1)}
+### Does not seem to like having k prior
+if (Use.k.prior == "Y"){inp$priors$logK <- c(pb.log.k, pb.log.k.sd, 1)}
+### provide prior for q
+if (Use.q.prior == "Y"){inp$priors$logq <- c(pb.log.q, pb.log.q.sd, 1)}
+
+assign("last.warning", NULL, envir = baseenv())
+inp <- check.inp(inp)
+
+Prior_warning = warnings()
+
+
+
+#plots the Catch and index 
+plotspict.data(inp)
+
+assign("last.warning", NULL, envir = baseenv())
+# Run the model
+res <- fit.spict(inp)
+
+Fit_warning = warnings()
+
+# What are the calculated values
+summary(res)
+
+Convergence = capture.output(summary(res))[1]
+
+# plot everything
+# plot(res)
+# # Calculate the residuals
+# res <- calc.osa.resid(res)
+# # are the residuals ok?
+# plotspict.diagnostic(res)
+# sumspict.diagnostics(res)
+
+####   Produce the reference value table
+tab1 <- sumspict.srefpoints(res);
+tab1 = as.data.frame(tab1)
+tab2 <- sumspict.states(res);
+tab2 = as.data.frame(tab2)
+spict.r = get.par('r', res)
+if (is.null(spict.r)){  spict.r = c(rep(NA, 5))}
+spict.k = get.par('K', res)
+if (is.null(spict.k)){  spict.k = c(rep(NA, 5))}
+spictrk = as.data.frame(rbind(spict.r, spict.k))
+
+
+results_spict = data.frame(Stock, "SPICT", Use.n.prior, Use.r.prior,
+                           Use.k.prior, Use.q.prior,
+                           pb.resilience, pb.r.low, pb.r.hi, 
+                           pb.k.low, pb.k.hi, pb.log.k, pb.log.k.sd,
+                           pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd,
+                           spictrk[1,2], spictrk[1,1], spictrk[1,3],
+                           spictrk[2,2], spictrk[2,1], spictrk[2,3],
+                           tab1[3,1], tab1[3,2], tab1[3,3], #msy
+                           tab1[2,1], tab1[2,2], tab1[2,3], #fmsy
+                           tab1[1,1], tab1[1,2], tab1[1,3], #bmsy
+                           tab2[1,1], tab2[1,2], tab2[1,3], # b end
+                           tab2[3,1], tab2[3,2], tab2[3,3], # bbmsy
+                           tab2[2,1], tab2[2,2], tab2[2,3], # f end
+                           tab2[4,1], tab2[4,2], tab2[4,3], # ffmsy
+                           Convergence[1], 
+                           if (length(Prior_warning)== 0){""} else  {names(Prior_warning)[1]},
+                           if (length(Fit_warning)== 0){""} else  {names(Fit_warning)[1]}) 
+
+
+
+results_spict = setNames(results_spict, c("Stock", "Method", "FixN2",
+                                          "Use.r", "Use.k", "Use.q",
+                                          "Resilience", "Prior.r.low", "Prior.r.hi", 
+                                          "Prior.k.low", "Prior.k.hi", 
+                                          "Prior.log.k", "Prior.log.k.sd", 
+                                          "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", 
+                                          "r", "r.low", "r.high",
+                                          "k", "k.low", "k.high", 
+                                          "msy", "msy.low", "msy.high",
+                                          "fmsy", "fmsy.low", "fmsy.high",
+                                          "bmsy", "bmsy.low", "bmsy.high",
+                                          "b.end", "b.end.low", "b.end.hi",
+                                          "bbmsy", "bbmsy.low", "bbmsy.hi",
+                                          "f.end", "f.end.low", "f.end.hi",
+                                          "ffmsy", "ffmsy.low", "ffmsy.hi",
+                                          "Converge", "Prior.Warn", "Fit.Warn"))
+
+
+
+
+results = rbind (results, results_spict)
+
+#####################################################################################
+# SPICT Option 6 -------------------------------------------------------------------
+### r, k, and q priors and n = 2
+Use.n.prior = "Y"
+Use.r.prior = "Y"
+Use.q.prior = "Y"
+Use.k.prior = "Y"
+
+
+inp <- list()
+inp$obsC <- data$catch
+inp$timeC <- data$year
+### Use both abundance index
+# inp$obsI[[1]] <- data$index1 [30:47]
+# inp$obsI[[2]] <- data$index2 [33:47]
+# inp$timeI <- list(data$year[30:47], data$year[33:47])
+
+### Use only one abundance index
+inp$obsI <- data$index1 [30:47]
+inp$timeI <- data$year[30:47]
+
+### fix n=2
+if (Use.n.prior == "Y"){inp$priors$logn <- c(log(2), 1e-3)}
+### provide r prior
+if (Use.r.prior == "Y"){inp$priors$logr <- c(pb.log.r, pb.log.r.sd, 1)}
+### Does not seem to like having k prior
+if (Use.k.prior == "Y"){inp$priors$logK <- c(pb.log.k, pb.log.k.sd, 1)}
+### provide prior for q
+if (Use.q.prior == "Y"){inp$priors$logq <- c(pb.log.q, pb.log.q.sd, 1)}
+
+assign("last.warning", NULL, envir = baseenv())
+inp <- check.inp(inp)
+
+Prior_warning = warnings()
+
+
+
+#plots the Catch and index 
+plotspict.data(inp)
+
+assign("last.warning", NULL, envir = baseenv())
+# Run the model
+res <- fit.spict(inp)
+
+Fit_warning = warnings()
+
+# What are the calculated values
+summary(res)
+
+Convergence = capture.output(summary(res))[1]
+
+# plot everything
+# plot(res)
+# # Calculate the residuals
+# res <- calc.osa.resid(res)
+# # are the residuals ok?
+# plotspict.diagnostic(res)
+# sumspict.diagnostics(res)
+
+####   Produce the reference value table
+tab1 <- sumspict.srefpoints(res);
+tab1 = as.data.frame(tab1)
+tab2 <- sumspict.states(res);
+tab2 = as.data.frame(tab2)
+spict.r = get.par('r', res)
+spict.k = get.par('K', res)
+spictrk = rbind(spict.r, spict.k)
+
+results_spict = data.frame(Stock, "SPICT", Use.n.prior, Use.r.prior,
+                           Use.k.prior, Use.q.prior,
+                           pb.resilience, pb.r.low, pb.r.hi, 
+                           pb.k.low, pb.k.hi, pb.log.k, pb.log.k.sd,
+                           pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd,
+                           spictrk[1,2], spictrk[1,1], spictrk[1,3],
+                           spictrk[2,2], spictrk[2,1], spictrk[2,3],
+                           tab1[3,1], tab1[3,2], tab1[3,3], #msy
+                           tab1[2,1], tab1[2,2], tab1[2,3], #fmsy
+                           tab1[1,1], tab1[1,2], tab1[1,3], #bmsy
+                           tab2[1,1], tab2[1,2], tab2[1,3], # b end
+                           tab2[3,1], tab2[3,2], tab2[3,3], # bbmsy
+                           tab2[2,1], tab2[2,2], tab2[2,3], # f end
+                           tab2[4,1], tab2[4,2], tab2[4,3], # ffmsy
+                           Convergence[1], 
+                           if (length(Prior_warning)== 0){""} else  {names(Prior_warning)[1]},
+                           if (length(Fit_warning)== 0){""} else  {names(Fit_warning)[1]}) 
+
+
+
+results_spict = setNames(results_spict, c("Stock", "Method", "FixN2",
+                                          "Use.r", "Use.k", "Use.q",
+                                          "Resilience", "Prior.r.low", "Prior.r.hi", 
+                                          "Prior.k.low", "Prior.k.hi", 
+                                          "Prior.log.k", "Prior.log.k.sd", 
+                                          "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", 
+                                          "r", "r.low", "r.high",
+                                          "k", "k.low", "k.high", 
+                                          "msy", "msy.low", "msy.high",
+                                          "fmsy", "fmsy.low", "fmsy.high",
+                                          "bmsy", "bmsy.low", "bmsy.high",
+                                          "b.end", "b.end.low", "b.end.hi",
+                                          "bbmsy", "bbmsy.low", "bbmsy.hi",
+                                          "f.end", "f.end.low", "f.end.hi",
+                                          "ffmsy", "ffmsy.low", "ffmsy.hi",
+                                          "Converge", "Prior.Warn", "Fit.Warn"))
+
+results_spict2 = setNames(data.frame(matrix(ncol = 47, nrow = 0)), c("Stock", "Method", "FixN2",
+                                          "Use.r", "Use.k", "Use.q",
+                                          "Resilience", "Prior.r.low", "Prior.r.hi", 
+                                          "Prior.k.low", "Prior.k.hi", 
+                                          "Prior.log.k", "Prior.log.k.sd", 
+                                          "Prior.q.low", "Prior.q.hi", "Prior.log.q", "Prior.log.q.sd", 
+                                          "r", "r.low", "r.high",
+                                          "k", "k.low", "k.high", 
+                                          "msy", "msy.low", "msy.high",
+                                          "fmsy", "fmsy.low", "fmsy.high",
+                                          "bmsy", "bmsy.low", "bmsy.high",
+                                          "b.end", "b.end.low", "b.end.hi",
+                                          "bbmsy", "bbmsy.low", "bbmsy.hi",
+                                          "f.end", "f.end.low", "f.end.hi",
+                                          "ffmsy", "ffmsy.low", "ffmsy.hi",
+                                          "Converge", "Prior.Warn", "Fit.Warn"))
+
+results_spict2 [1,1:17] = c(Stock, "SPICT", Use.n.prior, Use.r.prior,
+                           Use.k.prior, Use.q.prior,
+                           pb.resilience, pb.r.low, pb.r.hi, 
+                           pb.k.low, pb.k.hi, pb.log.k, pb.log.k.sd,
+                           pb.q.low, pb.q.hi, pb.log.q, pb.log.q.sd)
+
+results_spict2 [1,18:47] = c(spictrk[1,2], spictrk[1,1], spictrk[1,3],
+                                                        spictrk[2,2], spictrk[2,1], spictrk[2,3],
+                                                        tab1[3,1], tab1[3,2], tab1[3,3], #msy
+                                                        tab1[2,1], tab1[2,2], tab1[2,3], #fmsy
+                                                        tab1[1,1], tab1[1,2], tab1[1,3], #bmsy
+                                                        tab2[1,1], tab2[1,2], tab2[1,3], # b end
+                                                        tab2[3,1], tab2[3,2], tab2[3,3], # bbmsy
+                                                        tab2[2,1], tab2[2,2], tab2[2,3], # f end
+                                                        tab2[4,1], tab2[4,2], tab2[4,3], # ffmsy
+                                                        Convergence[1], 
+                                                        if (length(Prior_warning)== 0){""} else  {names(Prior_warning)[1]},
+                                                        if (length(Fit_warning)== 0){""} else  {names(Fit_warning)[1]}) 
+
+
+results = rbind (results, results_spict)
+
