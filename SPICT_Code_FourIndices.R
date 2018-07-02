@@ -398,6 +398,5 @@ results = pb.spict(data, Use.n.prior, Use.r.prior, Use.k.prior, Use.q.prior,
 
 ######################################################################################
 ### Save results ######################################
-write.csv(results, (paste(format("Results\\", Sys.Date(),format="%d%m%y_"), "Results_TwoIndex_", Stock,  ".csv") ))
-
+write.csv(results, (paste("Results\\", format(Sys.Date(),format="%d%m%y"), "Results MultipleIndex", Stock,  ".csv")))
           
