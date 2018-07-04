@@ -3,10 +3,10 @@ library(spict)
 options(scipen = 999)
 
 
-data = read.csv("Data//Whg_7_a//Whg.a.Data.csv")
+data = read.csv("Data//Cod_7_ek//Cod.data.csv")
 data$catch = data$catch / 1000
 
-Stock = "Whg_7_a"
+Stock = "Cod_7_ek"
 
 No.Index = ncol(data) - 3
 
@@ -141,7 +141,7 @@ pb.spict = function(data, No.Index, Use.Index, Use.n.prior, Use.r.prior, Use.k.p
   inp$obsI[[2]] <- index2$index2
   inp$timeI <- list(index1$year, index2$year)
   }
-  if (No.Index == 3){
+  else if (No.Index == 3){
     ### Use 3 abundance index
     index1 = data[complete.cases(data$index1), ]
     index2 = data[complete.cases(data$index2), ]
@@ -159,7 +159,7 @@ pb.spict = function(data, No.Index, Use.Index, Use.n.prior, Use.r.prior, Use.k.p
     inp$obsI[[1]] <- index1$index1
     inp$obsI[[2]] <- index2$index2
     inp$obsI[[3]] <- index3$index3
-    inp$obsI[[3]] <- index3$index3
+    inp$obsI[[4]] <- index4$index4
     inp$timeI <- list(index1$year, index2$year, index3$year, index4$year) 
   }}
 
