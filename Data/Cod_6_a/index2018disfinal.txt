@@ -1,0 +1,6 @@
+Cod in Divisions VIa,WGCSE2018,index file
+1
+cod via discards numbers.txt
+cod via landings numbers.txt
+cod via landings weights.txt
+cod via discards weights.txt

@@ -1,0 +1,18 @@
+IRISH SEA PLAICE, 2017   
+1
+LATON.txt
+LANUM.txt
+WELAND.txt
+WEST.txt
+NATMOR.txt
+MATPROP.txt
+FPROP.txt
+MPROP.txt
+F.txt
+N.txt
+DISTON.txt
+DISNUM.txt
+WEDIS.txt
+CATON.txt
+CANUM.txt
+WECA.txt

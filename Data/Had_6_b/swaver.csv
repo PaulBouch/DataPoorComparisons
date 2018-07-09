@@ -1,0 +1,288 @@
+ Lowestoft VPA Version 3.1 
+
+   15/05/2018  18:24   
+
+ Extended Survivors Analysis
+
+ HADDOCK LANDISC 2004 ROCKALL                                                    
+
+ CPUE data from file had6b.tun                                                                       
+
+ Catch data for  27 years. 1991 to 2017. Ages  1 to   7.
+
+      Fleet,            First, Last, First, Last, Alpha,  Beta
+                    ,    year, year,  age ,  age
+ SCOGFS              ,   1991, 2017,   0,     6,   .660,   .750
+
+
+ Time series weights : 
+
+      Tapered time weighting not applied
+
+
+ Catchability analysis :
+
+      Catchability dependent on stock size for ages <    4
+
+         Regression type = C
+         Minimum of  10 points used for regression
+         Survivor estimates shrunk to the population mean for ages <  4
+
+
+      Catchability independent of age for ages >=    5
+
+
+ Terminal population estimation :
+
+      Survivor estimates shrunk towards the mean F
+      of the final   4 years or the   3 oldest ages.
+
+      S.E. of the mean to which the estimates  are shrunk =   1.000
+
+      Minimum standard error for population
+      estimates derived from each fleet =    .300
+
+      Prior weighting not applied
+
+
+ Tuning converged after   25 iterations
+
+1
+
+
+ Regression weights 
+       , 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000, 1.000
+
+
+
+ Fishing mortalities
+    Age,  2008,  2009,  2010,  2011,  2012,  2013,  2014,  2015,  2016,  2017
+ 
+      1,  .195,  .278,  .000,  .020,  .003,  .131,  .010,  .005,  .022,  .022
+      2,  .438,  .495,  .232,  .060,  .041,  .053,  .084,  .099,  .075,  .164
+      3,  .295,  .471,  .346,  .340,  .220,  .103,  .788,  .143,  .125,  .209
+      4,  .505,  .349,  .292,  .438,  .344,  .087,  .766,  .456,  .060,  .157
+      5,  .736,  .368,  .356,  .202,  .012,  .075,  .396,  .267,  .027,  .098
+      6,  .275, 1.167,  .411,  .359,  .099,  .232,  .508,  .380,  .147,  .756
+
+
+
+1
+ XSA population numbers (Thousands)
+
+                                AGE
+ YEAR ,           1,            2,            3,            4,            5,            6,     
+
+ 2008 ,    2.97E+03, 6.88E+03, 4.95E+04, 3.60E+03, 1.08E+03, 4.44E+03,
+ 2009 ,    1.01E+03, 2.00E+03, 3.64E+03, 3.02E+04, 1.78E+03, 4.22E+02,
+ 2010 ,    1.38E+03, 6.29E+02, 9.99E+02, 1.86E+03, 1.74E+04, 1.01E+03,
+ 2011 ,    1.97E+02, 1.13E+03, 4.08E+02, 5.79E+02, 1.14E+03, 9.99E+03,
+ 2012 ,    1.34E+03, 1.58E+02, 8.72E+02, 2.38E+02, 3.06E+02, 7.60E+02,
+ 2013 ,    5.05E+04, 1.09E+03, 1.24E+02, 5.73E+02, 1.38E+02, 2.47E+02,
+ 2014 ,    3.97E+04, 3.62E+04, 8.47E+02, 9.16E+01, 4.30E+02, 1.05E+02,
+ 2015 ,    1.77E+04, 3.22E+04, 2.73E+04, 3.15E+02, 3.49E+01, 2.37E+02,
+ 2016 ,    1.57E+04, 1.44E+04, 2.39E+04, 1.94E+04, 1.64E+02, 2.18E+01,
+ 2017 ,    6.34E+04, 1.26E+04, 1.09E+04, 1.73E+04, 1.49E+04, 1.30E+02,
+
+ Estimated population abundance at 1st Jan 2018
+
+    ,     0.00E+00, 5.07E+04, 8.74E+03, 7.26E+03, 1.21E+04, 1.11E+04,
+
+ Taper weighted geometric mean of the VPA populations: 
+
+    ,     2.33E+04, 1.69E+04, 1.05E+04, 5.32E+03, 2.39E+03, 1.02E+03,
+
+ Standard error of the weighted Log(VPA populations) :
+
+    ,       1.7103,   1.7019,   1.6403,   1.5821,   1.5512,   1.4275,
+1
+
+ Log catchability residuals.
+
+
+
+ Fleet : SCOGFS              
+
+  Age  ,  1991,  1992,  1993,  1994,  1995,  1996,  1997
+     1 ,  -.37,   .37,   .08,  -.11,   .13,   .32,  -.31
+     2 ,  -.48,   .61,   .52,   .02,   .18,   .28,  -.44
+     3 ,  -.57,   .47,   .56,   .44,   .45,   .01,  -.90
+     4 ,  -.16,   .62,   .49,   .52,   .83,  -.04, -1.13
+     5 ,  -.23,   .10,   .52,  -.48,   .88,  -.05,  -.86
+     6 ,   .03,   .20,  -.03,  -.13,   .12,  -.13,  -.41
+ 
+
+
+  Age  ,  1998,  1999,  2000,  2001,  2002,  2003,  2004,  2005,  2006,  2007
+     1 , 99.99,   .20, 99.99,  -.71,  -.17,   .06, 99.99,   .42,  -.18,   .59
+     2 , 99.99,  -.34, 99.99,  -.88,  -.83,   .30, 99.99,   .16,   .73,  -.34
+     3 , 99.99,  -.32, 99.99,  -.52, -1.01,  -.26, 99.99,   .04,  -.09,   .33
+     4 , 99.99,  -.31, 99.99,  -.74,  -.81,  -.53, 99.99,   .62,   .60,   .71
+     5 , 99.99,  -.46, 99.99,  -.51, -1.10,   .31, 99.99,  -.53,   .93,   .11
+     6 , 99.99,  -.20, 99.99,  -.46,  -.08,   .19, 99.99,   .08,   .21,  -.07
+ 
+
+
+  Age  ,  2008,  2009,  2010,  2011,  2012,  2013,  2014,  2015,  2016,  2017
+     1 ,   .62,   .67, 99.99,   .56, -2.47,   .23,  -.11,   .00,  -.34,   .51
+     2 ,   .62,   .97, 99.99,   .27,   .49, -2.17,   .08,   .36,   .03,  -.15
+     3 ,   .01,   .92, 99.99,   .29,   .51,   .44, -1.47,   .39,   .09,   .20
+     4 ,  -.04,  -.07, 99.99,   .28,   .00, -1.62, 99.99,   .49,   .09,   .18
+     5 ,  -.18,  -.97, 99.99,   .15,  1.17,  -.11,  -.65,  2.54,  -.11,  -.48
+     6 ,   .01,  -.46, 99.99,   .02,  -.08,  -.38, 99.99,   .14,  -.41,  -.16
+ 
+
+
+
+ Mean log catchability and standard error of ages with catchability
+ independent of year class strength and constant w.r.t. time
+
+
+    Age ,         4,         5,         6
+ Mean Log q,   -2.4515,   -2.4281,   -2.4281,
+ S.E(Log q),     .6435,     .8116,     .2366,
+ 
+
+
+
+
+ Regression statistics :
+
+ Ages with q dependent on year class strength
+
+ Age, Slope , t-value , Intercept, RSquare, No Pts, Reg s.e, Mean Log q
+
+  1,     .77,    2.840,      3.55,     .88,     23,     .67,   -1.55,
+  2,     .84,    1.848,      3.32,     .86,     23,     .69,   -2.08,
+  3,     .88,    1.548,      3.23,     .89,     23,     .59,   -2.44,
+ 
+ Ages with q independent of year class strength and constant w.r.t. time.
+
+ Age, Slope , t-value , Intercept, RSquare, No Pts, Reg s.e,  Mean Q
+
+  4,     .92,     .865,      2.93,     .86,     22,     .60,   -2.45,
+  5,    1.30,   -2.354,       .86,     .74,     23,     .96,   -2.43,
+  6,     .94,    2.051,      2.78,     .98,     22,     .19,   -2.52,
+1
+
+
+ Terminal year survivor and F summaries :
+
+ Age  1   Catchability dependent on age and year class strength
+
+ Year class = 2016
+
+ Fleet,                 Estimated,    Int,       Ext,    Var,    N, Scaled,  Estimated
+      ,                 Survivors,    s.e,       s.e,   Ratio,    , Weights,    F    
+ SCOGFS              ,     84431.,   .691,       .000,    .00,   1,  .604,     .013
+
+   P shrinkage mean  ,     16901.,   1.70,,,,                        .102,     .065
+
+   F shrinkage mean  ,     26141.,   1.00,,,,                        .295,     .042
+
+ Weighted prediction :
+
+ Survivors,        Int,      Ext,    N,    Var,     F
+ at end of year,   s.e,      s.e,     ,   Ratio,     
+     50743.,       .54,      .58,    3,   1.072,   .022
+
+
+
+1
+ Age  2   Catchability dependent on age and year class strength
+
+ Year class = 2015
+
+ Fleet,                 Estimated,    Int,       Ext,    Var,    N, Scaled,  Estimated
+      ,                 Survivors,    s.e,       s.e,   Ratio,    , Weights,    F    
+ SCOGFS              ,      6826.,   .492,       .096,    .20,   2,  .716,     .205
+
+   P shrinkage mean  ,     10516.,   1.64,,,,                        .077,     .138
+
+   F shrinkage mean  ,     19184.,   1.00,,,,                        .207,     .078
+
+ Weighted prediction :
+
+ Survivors,        Int,      Ext,    N,    Var,     F
+ at end of year,   s.e,      s.e,     ,   Ratio,     
+      8738.,       .43,      .28,    4,    .664,   .164
+
+
+
+ Age  3   Catchability dependent on age and year class strength
+
+ Year class = 2014
+
+ Fleet,                 Estimated,    Int,       Ext,    Var,    N, Scaled,  Estimated
+      ,                 Survivors,    s.e,       s.e,   Ratio,    , Weights,    F    
+ SCOGFS              ,      7976.,   .382,       .066,    .17,   3,  .792,     .192
+
+   P shrinkage mean  ,      5318.,   1.58,,,,                        .059,     .276
+
+   F shrinkage mean  ,      5001.,   1.00,,,,                        .149,     .291
+
+ Weighted prediction :
+
+ Survivors,        Int,      Ext,    N,    Var,     F
+ at end of year,   s.e,      s.e,     ,   Ratio,     
+      7263.,       .35,      .11,    5,    .317,   .209
+
+
+
+1
+ Age  4   Catchability constant w.r.t. time and dependent on age
+
+ Year class = 2013
+
+ Fleet,                 Estimated,    Int,       Ext,    Var,    N, Scaled,  Estimated
+      ,                 Survivors,    s.e,       s.e,   Ratio,    , Weights,    F    
+ SCOGFS              ,     13755.,   .333,       .089,    .27,   4,  .872,     .139
+
+   F shrinkage mean  ,      4992.,   1.00,,,,                        .128,     .344
+
+ Weighted prediction :
+
+ Survivors,        Int,      Ext,    N,    Var,     F
+ at end of year,   s.e,      s.e,     ,   Ratio,     
+     12080.,       .32,      .20,    5,    .615,   .157
+
+
+
+ Age  5   Catchability constant w.r.t. time and dependent on age
+
+ Year class = 2012
+
+ Fleet,                 Estimated,    Int,       Ext,    Var,    N, Scaled,  Estimated
+      ,                 Survivors,    s.e,       s.e,   Ratio,    , Weights,    F    
+ SCOGFS              ,     12151.,   .311,       .141,    .45,   5,  .887,     .090
+
+   F shrinkage mean  ,      5380.,   1.00,,,,                        .113,     .192
+
+ Weighted prediction :
+
+ Survivors,        Int,      Ext,    N,    Var,     F
+ at end of year,   s.e,      s.e,     ,   Ratio,     
+     11085.,       .30,      .17,    6,    .571,   .098
+
+
+
+1
+ Age  6   Catchability constant w.r.t. time and age (fixed at the value for age)  5
+
+ Year class = 2011
+
+ Fleet,                 Estimated,    Int,       Ext,    Var,    N, Scaled,  Estimated
+      ,                 Survivors,    s.e,       s.e,   Ratio,    , Weights,    F    
+ SCOGFS              ,        39.,   .241,       .264,   1.10,   6,  .879,     .904
+
+   F shrinkage mean  ,       337.,   1.00,,,,                        .121,     .155
+
+ Weighted prediction :
+
+ Survivors,        Int,      Ext,    N,    Var,     F
+ at end of year,   s.e,      s.e,     ,   Ratio,     
+        50.,       .24,      .38,    7,   1.568,   .756
+
+
+
+1

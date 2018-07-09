@@ -1,0 +1,11 @@
+Cod in Divisions VIa ,WGCSE2018,index file
+1	
+COD7ALA.txt
+COD7ACN.txt
+COD7ACW.txt
+COD7ASW.txt
+COD7ANM.txt
+COD7AMO.txt
+COD7APF.txt
+COD7APM.txt
+COD7TUN.txt
