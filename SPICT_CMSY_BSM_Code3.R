@@ -3,10 +3,10 @@ library(spict)
 options(scipen = 999)
 
 
-data = read.csv("Data//Cod_7_ek//Cod.data.csv")
+data = read.csv("Data//Whg_6_a//Whg.6a.Data.csv")
 data$catch = data$catch / 1000
 
-Stock = "Cod_7_ek"
+Stock = "Whg_6_a"
 
 No.Index = ncol(data) - 3
 
@@ -150,7 +150,7 @@ pb.spict = function(data, No.Index, Use.Index, Use.n.prior, Use.r.prior, Use.k.p
     inp$obsI[[2]] <- index2$index2
     inp$obsI[[3]] <- index3$index3
     inp$timeI <- list(index1$year, index2$year, index3$year)
-  } else {
+  } else if(No.Index == 4){
     ### Use 4 abundance index
     index1 = data[complete.cases(data$index1), ]
     index2 = data[complete.cases(data$index2), ]
@@ -160,7 +160,35 @@ pb.spict = function(data, No.Index, Use.Index, Use.n.prior, Use.r.prior, Use.k.p
     inp$obsI[[2]] <- index2$index2
     inp$obsI[[3]] <- index3$index3
     inp$obsI[[4]] <- index4$index4
-    inp$timeI <- list(index1$year, index2$year, index3$year, index4$year) 
+    inp$timeI <- list(index1$year, index2$year, index3$year, index4$year)
+  } else if (No.Index == 5){
+    ### Use 5 abundance index
+    index1 = data[complete.cases(data$index1), ]
+    index2 = data[complete.cases(data$index2), ]
+    index3 = data[complete.cases(data$index3), ]
+    index4 = data[complete.cases(data$index4), ]
+    index5 = data[complete.cases(data$index5), ]
+    inp$obsI[[1]] <- index1$index1
+    inp$obsI[[2]] <- index2$index2
+    inp$obsI[[3]] <- index3$index3
+    inp$obsI[[4]] <- index4$index4
+    inp$obsI[[5]] <- index5$index5
+    inp$timeI <- list(index1$year, index2$year, index3$year, index4$year, index5$year) 
+  } else {
+    ### Use 6 abundance index
+    index1 = data[complete.cases(data$index1), ]
+    index2 = data[complete.cases(data$index2), ]
+    index3 = data[complete.cases(data$index3), ]
+    index4 = data[complete.cases(data$index4), ]
+    index5 = data[complete.cases(data$index5), ]
+    index6 = data[complete.cases(data$index6), ]
+    inp$obsI[[1]] <- index1$index1
+    inp$obsI[[2]] <- index2$index2
+    inp$obsI[[3]] <- index3$index3
+    inp$obsI[[4]] <- index4$index4
+    inp$obsI[[5]] <- index5$index5
+    inp$obsI[[6]] <- index6$index6
+    inp$timeI <- list(index1$year, index2$year, index3$year, index4$year, index5$year, index6$year) 
   }}
 
   ### fix n=2
@@ -610,6 +638,6 @@ results = pb.spict(data, No.Index, Use.Index, Use.n.prior, Use.r.prior, Use.k.pr
 
 ######################################################################################
 ### Save results ######################################
-write.csv(results, (paste("Results\\", format(Sys.Date(),format="%d%m%y"), "Results", Stock,  ".csv")))
+write.csv(results, (paste("Results\\", Stock, " Results ", format(Sys.Date(),format="%d%m%y"),".csv", sep = "")))
 
           

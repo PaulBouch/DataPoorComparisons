@@ -8,9 +8,17 @@ options(scipen = 999)
 
 ### Read in data
 Results <- read.csv("Results\\Results_All_030718.csv")
+
+### Or read in all results folders at once
+# file_names <- dir("Results") 
+# setwd("Results")
+# Results = do.call(rbind,lapply(file_names ,read.csv))
+# setwd ("..")
+
+
 ICES <- read.csv("Data\\ICES Refs 20_06_18.csv")
 
-Results = Results[ grep("false", Results$Converge, invert = TRUE) , ]
+Results = Results[ grep("Convergence: 1", Results$Converge, invert = TRUE) , ]
 
 Res2 = merge(Results, ICES, by = "Stock")
 
@@ -18,7 +26,7 @@ Res2$Name.N = ifelse(Res2$FixN2 == "Y", "N2", "")
 Res2$Name.r = ifelse (Res2$Use.r == "Y", "r", "")
 Res2$Name.k = ifelse (Res2$Use.k == "Y", "k", "")
 Res2$Name.q = ifelse (Res2$Use.q == "Y", "q", "")
-Res2$Name.Multi = ifelse (Res2$Index > "1", "Multi", "Single")
+Res2$Name.Multi = ifelse (Res2$Index == "1", "Single", "Multi")
 
 Res2$FullMethod = ifelse (Res2$Method == "SPICT", paste(Res2$Method, Res2$Name.N, Res2$Name.r, 
                                                         Res2$Name.k, Res2$Name.q, Res2$Name.Multi, sep = ""), 
