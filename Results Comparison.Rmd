@@ -1,0 +1,333 @@
+---
+title: "SPICT, CMSY and BSM Comparisons for Celtic Sea ICES stocks"
+author: "Paul Bouch"
+date: "11 July 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library (plyr)
+library(ggplot2)
+library(knitr)
+#library(reshape)
+#library (reshape2)
+#library (gridExtra)
+options(scipen = 999)
+
+file_names <- dir("Results")
+setwd("Results")
+Results = do.call(rbind,lapply(file_names ,read.csv))
+setwd ("..")
+
+
+ICES <- read.csv("Data\\ICES Refs 18_07_18.csv")
+ICESL_H = ICES$Stock[order(ICES$ICES_Fmsy)]
+ICES$ICES_FFmsy = ICES$ICES_F_end/ICES$ICES_Fmsy
+
+
+Results = Results[ grep("Convergence: 1", Results$Converge, invert = TRUE) , ]
+
+# write.csv(Results, "test pre.csv")
+
+#### Fix for data prior to 16/07/18. Recalculation of FFMSY values for BSM and CMSY
+Results$ffmsy [Results$Method %in% c("CMSY", "BSM")] = Results$f.end[Results$Method %in% c("CMSY", "BSM")]/Results$fmsy[Results$Method %in% c("CMSY", "BSM")]
+
+Results$ffmsy.low [Results$Method %in% c("CMSY", "BSM")] = Results$f.end.low[Results$Method %in% c("CMSY", "BSM")]/Results$fmsy[Results$Method %in% c("CMSY", "BSM")]
+
+Results$ffmsy.hi [Results$Method %in% c("CMSY", "BSM")] = Results$f.end.hi[Results$Method %in% c("CMSY", "BSM")]/Results$fmsy[Results$Method %in% c("CMSY", "BSM")]
+
+# write.csv(Results, "test post.csv")
+
+
+
+Res2 = merge(Results, ICES, by = "Stock")
+
+Res2$Name.N = ifelse(Res2$FixN2 == "Y", "N2", "")
+Res2$Name.r = ifelse (Res2$Use.r == "Y", "r", "")
+Res2$Name.k = ifelse (Res2$Use.k == "Y", "k", "")
+Res2$Name.q = ifelse (Res2$Use.q == "Y", "q", "")
+Res2$Name.Multi = ifelse (Res2$Index == "1", "Single", "Multi")
+
+Res2$FullMethod = ifelse (Res2$Method == "SPICT", paste(Res2$Method, Res2$Name.N, Res2$Name.r, 
+                                                        Res2$Name.k, Res2$Name.q, Res2$Name.Multi, sep = ""), 
+                          ifelse (Res2$Method == "CMSY", "CMSY", "BSM"))
+
+
+
+Res2$FMSY_ARE = 100* abs((Res2$fmsy - Res2$ICES_Fmsy)/Res2$ICES_Fmsy) 
+Res2$F_ARE = 100* abs((Res2$f.end - Res2$ICES_F_end)/Res2$ICES_F_end) 
+Res2$B_ARE = 100* abs((Res2$b.end - Res2$ICES_TSB)/Res2$ICES_TSB) 
+Res2$F_FMSY_ARE = 100* abs(Res2$ffmsy - (Res2$ICES_F_end/Res2$ICES_Fmsy)/(Res2$ICES_F_end/Res2$ICES_Fmsy))
+
+Res2$FMSY_MSE = (Res2$fmsy - Res2$ICES_Fmsy)^2 
+Res2$F_MSE = (Res2$f.end - Res2$ICES_F_end)^2 
+Res2$B_MSE = (Res2$b.end - Res2$ICES_TSB)^2
+Res2$F_FMSY_MSE = (Res2$ffmsy - (Res2$ICES_F_end/Res2$ICES_Fmsy))^2
+
+# ARE_Summary = ddply(Res2, "FullMethod", summarise,
+#                          Fmsy_ARE_mean = mean(FMSY_ARE) ,
+#                          Fmsy_ARE_median = median (FMSY_ARE),
+#                          Fmsy_MSE_mean = mean(FMSY_MSE),
+#                          Fmsy_MSE_median = median(FMSY_MSE))
+# 
+# kable(ARE_Summary, digits = 5)
+
+Res2$Stock <- factor(Res2$Stock, levels = ICESL_H)
+
+
+
+```
+
+# Questions:
+1. How does BSM and CMSY compare?
+2. Which variant of single index SPICT does best?
+3. Does adding multiple indices improve SPICT?
+4. Of all the methods and all the options, which is the best for the different reference points?
+5. How sensitive are CMSY and BSM to incorrect starting assumptions? 
+
+# Comparison of CMSY and BSM
+
+CMSY uses the catch data and an estimate of resilience to perform the assessment. If not provided, as in this case, it will also make some assumptions about biomass reference points. 
+
+BSM uses the catch data, an estimate of resilience and also an estimate of abundance, in this case a survey index. If not provided it also makes assumptions about the reference points for r, k, and q. 
+
+```{r, echo= F, warning = F}
+### Fmsy plot
+ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+       aes(Stock, fmsy, colour = Method))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = fmsy.low, ymax = fmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_Fmsy), pch=3, size = 3, colour = "black")
+
+### a correlation plot
+ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+       aes(ICES_Fmsy, fmsy, colour = Method))+
+  geom_point(pch=1, size = 3) +
+    theme_bw() + 
+    coord_cartesian(ylim=c(0, 0.6), xlim = c(0, 0.6))
+
+Fmsy_Summary = ddply(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+                    "FullMethod", summarise,
+                         Fmsy_ARE_mean = mean(FMSY_ARE) ,
+                         Fmsy_ARE_median = median (FMSY_ARE),
+                         Fmsy_MSE_mean = mean(FMSY_MSE),
+                         Fmsy_MSE_median = median(FMSY_MSE))
+
+kable(Fmsy_Summary, digits = 3)
+
+### FFmsy
+ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+       aes(Stock, ffmsy, colour = Method))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5))+
+  theme_bw() +
+  geom_linerange(aes(ymin = ffmsy.low, ymax = ffmsy.hi), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_FFmsy), pch=3, size = 3, colour = "black")+
+  coord_cartesian(ylim=c(0, 10))
+
+### a correlation plot
+ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+       aes(ICES_FFmsy, ffmsy, colour = Method))+
+  geom_point(pch=1, size = 3) +
+    theme_bw()  
+
+
+FFmsy_Summary = ddply(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+                    "FullMethod", summarise,
+                         F_Fmsy_ARE_mean = mean(F_FMSY_ARE) ,
+                         F_Fmsy_ARE_median = median (F_FMSY_ARE),
+                         F_Fmsy_MSE_mean = mean(F_FMSY_MSE),
+                         F_Fmsy_MSE_median = median(F_FMSY_MSE))
+
+kable(FFmsy_Summary, digits = 3)
+
+
+### F end
+ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+       aes(Stock, f.end, colour = Method))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5))+
+  theme_bw() +
+  geom_linerange(aes(ymin = f.end.low, ymax = f.end.hi), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_F_end), pch=3, size = 3, colour = "black")+
+  coord_cartesian(ylim=c(0, 3))
+
+### a correlation plot
+ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+         aes(ICES_F_end, f.end, colour = Method))+
+  geom_point(pch=1, size = 3) +
+    theme_bw()  
+
+F_End_Summary = ddply(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+                    "FullMethod", summarise,
+                         F_ARE_mean = mean(F_ARE) ,
+                         F_ARE_median = median (F_ARE),
+                         F_MSE_mean = mean(F_MSE),
+                         F_MSE_median = median(F_MSE))
+
+kable(F_End_Summary, digits = 3)
+
+
+### B end
+ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+       aes(Stock, b.end, colour = Method))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5))+
+  theme_bw() +
+  geom_linerange(aes(ymin = b.end.low, ymax = b.end.hi), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_TSB), pch=3, size = 3, colour = "black")
+
+### a correlation plot
+ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+       aes(ICES_TSB, b.end, colour = Method))+
+  geom_point(pch=1, size = 3) +
+    theme_bw()  
+
+B_End_Summary = ddply(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+                    "FullMethod", summarise,
+                         B_ARE_mean = mean(B_ARE, na.rm=TRUE) ,
+                         B_ARE_median = median (B_ARE, na.rm=TRUE),
+                         B_MSE_mean = mean(B_MSE, na.rm=TRUE),
+                         B_MSE_median = median(B_MSE, na.rm=TRUE))
+
+kable(B_End_Summary, digits = 3)
+
+### a correlation plot
+ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+       aes(ICES_Fmsy, fmsy, colour = Method))+
+  geom_point(pch=1, size = 3) +
+    theme_bw() + 
+    coord_cartesian(ylim=c(0, 0.6), xlim = c(0, 0.6))
+
+BSM = Res2[Res2$Method %in% "BSM", ]
+CMSY = Res2[Res2$Method %in% "CMSY", ]
+
+cor.test(BSM$fmsy, BSM$ICES_Fmsy)
+cor.test(CMSY$fmsy, CMSY$ICES_Fmsy)
+
+#### Or....
+# require(plyr)
+# func <- function(xx)
+# {
+# return(data.frame(COR = cor(xx$fmsy, xx$ICES_Fmsy)))
+# }
+# 
+# ddply(Res2, .(Res2$FullMethod), func)
+
+```
+
+So the results show that the BSM method doesn't really do that well when the data provided is from a survey index. The BSM can only use one survey index, so there isn't too much to fit the model with. The default assumptions, that the CMSY method uses, seem to work pretty well and for most reference points give reasonable results.
+
+In what circumstances would you actually prefer to use BSM over CMSY? Maybe if there was a really good abundance time series that was long term (either of effort or from a survey). What about if we plot the time series length against difference from ICES value? 
+
+
+````{r, echo= F, warning = F}
+
+
+ggplot(Res2[Res2$Method %in% "BSM", ], 
+       aes(IndexYears, FMSY_ARE, colour = Method))+
+  geom_point(pch=1, size = 3) +
+    theme_bw()    
+
+cor.test(BSM$fmsy, BSM$IndexYears)
+
+
+ggplot(Res2[Res2$Method %in% "BSM", ], 
+       aes(IndexYears, F_FMSY_ARE, colour = Method))+
+  geom_point(pch=1, size = 3) +
+    theme_bw()  
+
+cor.test(BSM$F_FMSY_ARE, BSM$IndexYears)
+
+ggplot(Res2[Res2$Method %in% "BSM", ], 
+       aes(IndexYears, F_ARE, colour = Method))+
+  geom_point(pch=1, size = 3) +
+    theme_bw()  
+
+cor.test(BSM$F_ARE, BSM$IndexYears)
+
+ggplot(Res2[Res2$Method %in% "BSM", ], 
+       aes(IndexYears, B_ARE, colour = Method))+
+  geom_point(pch=1, size = 3) +
+    theme_bw()  
+
+cor.test(BSM$B_ARE, BSM$IndexYears)
+
+````
+
+So no relationship between the absolute relative errors of the reference points and the length of the index timeseries. So even with a great survey index timeseries, would you ever use BSM rather than CMSY???
+
+* Which variant of single index SPICT does best?
+
+
+````{r, echo = F, warning = F}
+
+### Fmsy plot
+ggplot(Res2[Res2$FullMethod %in% c("SPICTSingle", "SPICTN2Single",
+                               "SPICTN2rSingle", "SPICTN2rkSingle",
+                               "SPICTN2rqSingle", "SPICTN2rkqSingle",
+                               "SPICTSingle", "SPICTrSingle", "SPICTrkSingle",
+                               "SPICTrqSingle", "SPICTrkqSingle"), ], 
+       aes(Stock, fmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = fmsy.low, ymax = fmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_Fmsy), pch=3, size = 3, colour = "black")+
+      coord_cartesian(ylim=c(0, 1))
+
+### a correlation plot
+ggplot(Res2[Res2$FullMethod %in% c("SPICTSingle", "SPICTN2Single",
+                               "SPICTN2rSingle", "SPICTN2rkSingle",
+                               "SPICTN2rqSingle", "SPICTN2rkqSingle",
+                               "SPICTSingle", "SPICTrSingle", "SPICTrkSingle",
+                               "SPICTrqSingle", "SPICTrkqSingle"), ],
+       aes(ICES_Fmsy, fmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3) +
+    theme_bw() + 
+    coord_cartesian(ylim=c(0, 0.6), xlim = c(0, 0.6))
+
+Fmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("SPICTSingle", "SPICTN2Single",
+                               "SPICTN2rSingle", "SPICTN2rkSingle",
+                               "SPICTN2rqSingle", "SPICTN2rkqSingle",
+                               "SPICTSingle", "SPICTrSingle", "SPICTrkSingle",
+                               "SPICTrqSingle", "SPICTrkqSingle"), ], 
+                    "FullMethod", summarise,
+                         Fmsy_ARE_mean = mean(FMSY_ARE) ,
+                         Fmsy_ARE_median = median (FMSY_ARE),
+                         Fmsy_MSE_mean = mean(FMSY_MSE),
+                         Fmsy_MSE_median = median(FMSY_MSE))
+
+kable(Fmsy_Summary, digits = 3)
+
+
+````
+
+
+
+
+
+
+
+
+
+Want to look at the absolute relative errors for all the methods:
+
+````{r}
+
+Refs_ARE_Summary = ddply(Res2, "FullMethod", summarise,
+                         Fmsy_mean = mean(FMSY_ARE) ,
+                         Fmsy_median = median (FMSY_ARE),
+                         F_Fmsy_mean = mean(F_FMSY_ARE, na.rm=TRUE),
+                         F_Fmsy_median = median(F_FMSY_ARE, na.rm=TRUE),
+                         F_mean = mean(F_ARE, na.rm=TRUE),
+                         F_median = median(F_ARE, na.rm=TRUE),
+                         B_mean = mean(B_ARE, na.rm=TRUE),
+                         B_median = median(B_ARE, na.rm=TRUE))
+
+kable(Refs_ARE_Summary, digits = 2)
+
+````
