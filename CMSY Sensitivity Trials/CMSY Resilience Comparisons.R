@@ -3,10 +3,14 @@ library (ggplot2)
 library (gridExtra)
 options(scipen = 999)
 
-results_resilience$Method = "CMSY"
-results_resilience_BSM$Method = "BSM"
+results_res_CMSY = read.csv("CMSY Sensitivity Trials\\Results\\results_resilience_CMSY.csv")
+results_res_BSM = read.csv("CMSY Sensitivity Trials\\Results\\results_resilience_BSM.csv")
 
-Res_test = rbind(results_resilience, results_resilience_BSM)
+
+results_res_CMSY$Method = "CMSY"
+results_res_BSM$Method = "BSM"
+
+Res_test = rbind(results_res_CMSY, results_res_BSM)
 
 fmsy.plot = ggplot (Res_test, aes(Method, fmsy, colour = Resilience))+
   geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +

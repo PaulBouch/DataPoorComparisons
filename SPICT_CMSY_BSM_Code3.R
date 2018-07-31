@@ -3,10 +3,10 @@ library(spict)
 options(scipen = 999)
 
 
-data = read.csv("Data//Whg_6_a//Whg.6a.Data.csv")
+data = read.csv("Data//Cod_6_a//Cod.6a.Data.csv")
 data$catch = data$catch / 1000
 
-Stock = "Whg_6_a"
+Stock = "Cod_6_a"
 
 No.Index = ncol(data) - 3
 
@@ -249,10 +249,10 @@ pb.spict = function(data, No.Index, Use.Index, Use.n.prior, Use.r.prior, Use.k.p
                                                                        "msy", "msy.low", "msy.high",
                                                                        "fmsy", "fmsy.low", "fmsy.high",
                                                                        "bmsy", "bmsy.low", "bmsy.high",
-                                                                       "b.end", "b.end.low", "b.end.hi",
-                                                                       "bbmsy", "bbmsy.low", "bbmsy.hi",
-                                                                       "f.end", "f.end.low", "f.end.hi",
-                                                                       "ffmsy", "ffmsy.low", "ffmsy.hi",
+                                                                       "b.end", "b.end.low", "b.end.high",
+                                                                       "bbmsy", "bbmsy.low", "bbmsy.high",
+                                                                       "f.end", "f.end.low", "f.end.high",
+                                                                       "ffmsy", "ffmsy.low", "ffmsy.high",
                                                                        "Converge", "Prior.Warn", "Fit.Warn"))
   
   results_spict [1,1:18] = c(Stock, "SPICT", Use.Index, Use.n.prior, Use.r.prior,
@@ -309,7 +309,10 @@ results_cmsy = data.frame(Stock, "CMSY", 1, "Y", "Y", "Y", "Y",pb.resilience,
                           cmsy_ref[3,2], cmsy_ref[3,3], cmsy_ref[3,4],
                           cmsy_ref[4,2], cmsy_ref[4,3], cmsy_ref[4,4],
                           cmsy_ref[5,2], cmsy_ref[5,3], cmsy_ref[5,4],
-                          cmsy_est [ nrow(cmsy_est), c(4:9, 13:15, 19:21)],
+                          cmsy_est [ nrow(cmsy_est), c(4:9, 13:15)],
+                          (cmsy_est [ nrow(cmsy_est), 13])/(cmsy_ref[4,2]),
+                          (cmsy_est [ nrow(cmsy_est), 14])/(cmsy_ref[4,2]),
+                          (cmsy_est [ nrow(cmsy_est), 15])/(cmsy_ref[4,2]),
                           "",  "", "")
 
 results_cmsy = setNames(results_cmsy, c("Stock", "Method", "Index","FixN2",
@@ -323,10 +326,10 @@ results_cmsy = setNames(results_cmsy, c("Stock", "Method", "Index","FixN2",
                              "msy", "msy.low", "msy.high",
                              "fmsy", "fmsy.low", "fmsy.high",
                              "bmsy", "bmsy.low", "bmsy.high",
-                             "b.end", "b.end.low", "b.end.hi",
-                             "bbmsy", "bbmsy.low", "bbmsy.hi",
-                             "f.end", "f.end.low", "f.end.hi",
-                             "ffmsy", "ffmsy.low", "ffmsy.hi",
+                             "b.end", "b.end.low", "b.end.high",
+                             "bbmsy", "bbmsy.low", "bbmsy.high",
+                             "f.end", "f.end.low", "f.end.high",
+                             "ffmsy", "ffmsy.low", "ffmsy.high",
                              "Converge", "Prior.Warn", "Fit.Warn"))
 
 
@@ -338,7 +341,7 @@ bsm = bsm(year = data$year, catch = data$catch,
               biomass=data$index1, btype="CPUE",
               r.low = pb.r.low, r.hi = pb.r.hi)
 
-#plot_dlm (bsm)
+plot_dlm (bsm)
 bsm_ref = bsm[["ref_pts"]]
 bsm_est = bsm[["ref_ts"]]
 
@@ -353,7 +356,10 @@ results_bsm = data.frame(Stock, "BSM", 1, "Y", "Y", "Y", "Y",pb.resilience,
                           bsm_ref[3,2], bsm_ref[3,3], bsm_ref[3,4],
                           bsm_ref[4,2], bsm_ref[4,3], bsm_ref[4,4],
                           bsm_ref[5,2], bsm_ref[5,3], bsm_ref[5,4],
-                          bsm_est [ nrow(bsm_est), c(4:9, 13:15, 19:21)],
+                          bsm_est [ nrow(bsm_est), c(4:9, 13:15)],
+                         (bsm_est [ nrow(bsm_est), 13])/(bsm_ref[5,2]),
+                         (bsm_est [ nrow(bsm_est), 14])/(bsm_ref[5,2]),
+                         (bsm_est [ nrow(bsm_est), 15])/(bsm_ref[5,2]),
                          "", "","")
 
 results_bsm = setNames(results_bsm, c("Stock", "Method", "Index","FixN2",
@@ -367,10 +373,10 @@ results_bsm = setNames(results_bsm, c("Stock", "Method", "Index","FixN2",
                                         "msy", "msy.low", "msy.high",
                                         "bmsy", "bmsy.low", "bmsy.high",
                                         "fmsy", "fmsy.low", "fmsy.high",
-                                        "b.end", "b.end.low", "b.end.hi",
-                                        "bbmsy", "bbmsy.low", "bbmsy.hi",
-                                        "f.end", "f.end.low", "f.end.hi",
-                                        "ffmsy", "ffmsy.low", "ffmsy.hi",
+                                        "b.end", "b.end.low", "b.end.high",
+                                        "bbmsy", "bbmsy.low", "bbmsy.high",
+                                        "f.end", "f.end.low", "f.end.high",
+                                        "ffmsy", "ffmsy.low", "ffmsy.high",
                                       "Converge", "Prior.Warn", "Fit.Warn"))
 
 results = rbind (results_cmsy, results_bsm)

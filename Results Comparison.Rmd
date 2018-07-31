@@ -1,8 +1,10 @@
 ---
-title: "SPICT, CMSY and BSM Comparisons for Celtic Sea ICES stocks"
+title: "SPICT, CMSY and BSM Comparisons for Celtic Sea and North Sea ICES stocks"
 author: "Paul Bouch"
 date: "11 July 2018"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -10,9 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library (plyr)
 library(ggplot2)
 library(knitr)
+library (gridExtra)
 #library(reshape)
 #library (reshape2)
-#library (gridExtra)
 options(scipen = 999)
 
 file_names <- dir("Results")
@@ -21,10 +23,9 @@ Results = do.call(rbind,lapply(file_names ,read.csv))
 setwd ("..")
 
 
-ICES <- read.csv("Data\\ICES Refs 18_07_18.csv")
+ICES <- read.csv("Data\\ICES Refs 19_07_18.csv")
 ICESL_H = ICES$Stock[order(ICES$ICES_Fmsy)]
 ICES$ICES_FFmsy = ICES$ICES_F_end/ICES$ICES_Fmsy
-
 
 Results = Results[ grep("Convergence: 1", Results$Converge, invert = TRUE) , ]
 
@@ -37,20 +38,21 @@ Results$ffmsy.low [Results$Method %in% c("CMSY", "BSM")] = Results$f.end.low[Res
 
 Results$ffmsy.hi [Results$Method %in% c("CMSY", "BSM")] = Results$f.end.hi[Results$Method %in% c("CMSY", "BSM")]/Results$fmsy[Results$Method %in% c("CMSY", "BSM")]
 
-# write.csv(Results, "test post.csv")
+#write.csv(Results, "test post.csv")
 
 
 
 Res2 = merge(Results, ICES, by = "Stock")
 
-Res2$Name.N = ifelse(Res2$FixN2 == "Y", "N2", "")
-Res2$Name.r = ifelse (Res2$Use.r == "Y", "r", "")
-Res2$Name.k = ifelse (Res2$Use.k == "Y", "k", "")
-Res2$Name.q = ifelse (Res2$Use.q == "Y", "q", "")
-Res2$Name.Multi = ifelse (Res2$Index == "1", "Single", "Multi")
+Res2$Name.N = ifelse(Res2$FixN2 == "Y", "_N2", "")
+Res2$Name.r = ifelse (Res2$Use.r == "Y", "_r", "")
+Res2$Name.k = ifelse (Res2$Use.k == "Y", "_k", "")
+Res2$Name.q = ifelse (Res2$Use.q == "Y", "_q", "")
+Res2$Name.Multi = ifelse (Res2$Index == "1", "_Single", "_Multi")
 
 Res2$FullMethod = ifelse (Res2$Method == "SPICT", paste(Res2$Method, Res2$Name.N, Res2$Name.r, 
-                                                        Res2$Name.k, Res2$Name.q, Res2$Name.Multi, sep = ""), 
+                                                        Res2$Name.k, Res2$Name.q, Res2$Name.Multi, 
+                                                        sep = ""), 
                           ifelse (Res2$Method == "CMSY", "CMSY", "BSM"))
 
 
@@ -78,13 +80,29 @@ Res2$Stock <- factor(Res2$Stock, levels = ICESL_H)
 
 
 ```
+# CMSY, BSM and SPICT
+
+All three assessment methodologies are surplus production models that are suited for data poor stocks. They require a catch time series for the stock. CMSY requires an estimate of resilience of the stock, and some prior ranges for biomass. If these ranges of biomass are not specified, there are default rules that use the catch data to determine a starting, intermediate and final biomass range.
+
+CMSY then lools for viable pairs of r and k, that prevent the stock from crashing and maintain the biomass within the biomass ranges at the intermediate and end point. From the viable pairs tested, the most likely r and k estimates are calculated from the tip of the triangle where r is highest.
+
+The BSM (Bayesian Surplus Model) is a modified version of CMSY that utilises an abundance index, either in the form of a biomass, CPUE or survey timeseries. It will use the estimate of resilience to create an r prior. It will also use the biomass ranges from CMSY to create a k prior, and will create a prior for q based on the effort timeseries. So from the data, BSM will create and use priors for r, k and q when fitting the model. It is not possible to fit BSM without these derived priors. 
+
+SPICT is similar to BSM in that it fits a surplus production model to the data, yet it is more flexible in the data requirements. SPICT does not assume a symmetrical surplus production curve. It can be fixed as n=2, which makes the curve symmetrical and analogous to the Schaefer model and identical to BSM. Priors for r, k and q can be used by the SPICT model, so we can test the model against BSM and CMSY using the same priors that are derived by the Froese methodologies.
+
+SPICT has the additional option of using multiple abundance/survey indices, and for the 20 stocks assessed this is an option for 13 of them.
+
+# The Data
+
+The stocks used for the comparison are ICES data rich stocks from the Celtic, Irish and North Seas. The data is from the most recent assessment (2017 or 2018) and was obtained from the relevant working group or from stockassessment.org
 
 # Questions:
 1. How does BSM and CMSY compare?
-2. Which variant of single index SPICT does best?
-3. Does adding multiple indices improve SPICT?
-4. Of all the methods and all the options, which is the best for the different reference points?
-5. How sensitive are CMSY and BSM to incorrect starting assumptions? 
+2. Should SPICT fix n=2?
+3. Which priors of r, k and q are useful?
+4. Does adding multiple indices improve SPICT?
+5. Of all the methods and all the options, which is the best for the different reference points?
+6. How sensitive are CMSY and BSM to incorrect starting assumptions? 
 
 # Comparison of CMSY and BSM
 
@@ -103,11 +121,11 @@ ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ],
   geom_point(aes(Stock, ICES_Fmsy), pch=3, size = 3, colour = "black")
 
 ### a correlation plot
-ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
-       aes(ICES_Fmsy, fmsy, colour = Method))+
-  geom_point(pch=1, size = 3) +
-    theme_bw() + 
-    coord_cartesian(ylim=c(0, 0.6), xlim = c(0, 0.6))
+# ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+#        aes(ICES_Fmsy, fmsy, colour = Method))+
+#   geom_point(pch=1, size = 3) +
+#     theme_bw() + 
+#     coord_cartesian(ylim=c(0, 0.6), xlim = c(0, 0.6))
 
 Fmsy_Summary = ddply(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
                     "FullMethod", summarise,
@@ -123,16 +141,16 @@ ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ],
        aes(Stock, ffmsy, colour = Method))+
   geom_point(pch=1, size = 3, position = position_dodge(width = 0.5))+
   theme_bw() +
-  geom_linerange(aes(ymin = ffmsy.low, ymax = ffmsy.hi), position = position_dodge(width = 0.5), size =0.3)+
+  geom_linerange(aes(ymin = ffmsy.low, ymax = ffmsy.high), position = position_dodge(width = 0.5), size =0.3)+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   geom_point(aes(Stock, ICES_FFmsy), pch=3, size = 3, colour = "black")+
   coord_cartesian(ylim=c(0, 10))
 
 ### a correlation plot
-ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
-       aes(ICES_FFmsy, ffmsy, colour = Method))+
-  geom_point(pch=1, size = 3) +
-    theme_bw()  
+# ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+#        aes(ICES_FFmsy, ffmsy, colour = Method))+
+#   geom_point(pch=1, size = 3) +
+#     theme_bw()  
 
 
 FFmsy_Summary = ddply(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
@@ -150,16 +168,16 @@ ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ],
        aes(Stock, f.end, colour = Method))+
   geom_point(pch=1, size = 3, position = position_dodge(width = 0.5))+
   theme_bw() +
-  geom_linerange(aes(ymin = f.end.low, ymax = f.end.hi), position = position_dodge(width = 0.5), size =0.3)+
+  geom_linerange(aes(ymin = f.end.low, ymax = f.end.high), position = position_dodge(width = 0.5), size =0.3)+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
   geom_point(aes(Stock, ICES_F_end), pch=3, size = 3, colour = "black")+
   coord_cartesian(ylim=c(0, 3))
 
 ### a correlation plot
-ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
-         aes(ICES_F_end, f.end, colour = Method))+
-  geom_point(pch=1, size = 3) +
-    theme_bw()  
+# ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+#          aes(ICES_F_end, f.end, colour = Method))+
+#   geom_point(pch=1, size = 3) +
+#     theme_bw()  
 
 F_End_Summary = ddply(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
                     "FullMethod", summarise,
@@ -176,15 +194,16 @@ ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ],
        aes(Stock, b.end, colour = Method))+
   geom_point(pch=1, size = 3, position = position_dodge(width = 0.5))+
   theme_bw() +
-  geom_linerange(aes(ymin = b.end.low, ymax = b.end.hi), position = position_dodge(width = 0.5), size =0.3)+
+  geom_linerange(aes(ymin = b.end.low, ymax = b.end.high), position = position_dodge(width = 0.5), size =0.3)+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  geom_point(aes(Stock, ICES_TSB), pch=3, size = 3, colour = "black")
+  geom_point(aes(Stock, ICES_TSB), pch=3, size = 3, colour = "black")+
+    coord_cartesian(ylim=c(0, 10000))
 
 ### a correlation plot
-ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
-       aes(ICES_TSB, b.end, colour = Method))+
-  geom_point(pch=1, size = 3) +
-    theme_bw()  
+# ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+#        aes(ICES_TSB, b.end, colour = Method))+
+#   geom_point(pch=1, size = 3) +
+#     theme_bw()  
 
 B_End_Summary = ddply(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
                     "FullMethod", summarise,
@@ -208,20 +227,12 @@ CMSY = Res2[Res2$Method %in% "CMSY", ]
 cor.test(BSM$fmsy, BSM$ICES_Fmsy)
 cor.test(CMSY$fmsy, CMSY$ICES_Fmsy)
 
-#### Or....
-# require(plyr)
-# func <- function(xx)
-# {
-# return(data.frame(COR = cor(xx$fmsy, xx$ICES_Fmsy)))
-# }
-# 
-# ddply(Res2, .(Res2$FullMethod), func)
 
 ```
 
 So the results show that the BSM method doesn't really do that well when the data provided is from a survey index. The BSM can only use one survey index, so there isn't too much to fit the model with. The default assumptions, that the CMSY method uses, seem to work pretty well and for most reference points give reasonable results.
 
-In what circumstances would you actually prefer to use BSM over CMSY? Maybe if there was a really good abundance time series that was long term (either of effort or from a survey). What about if we plot the time series length against difference from ICES value? 
+Is there a relationship between timeseries length of the abundance index and the Fmsy error?  
 
 
 ````{r, echo= F, warning = F}
@@ -235,42 +246,97 @@ ggplot(Res2[Res2$Method %in% "BSM", ],
 cor.test(BSM$fmsy, BSM$IndexYears)
 
 
-ggplot(Res2[Res2$Method %in% "BSM", ], 
-       aes(IndexYears, F_FMSY_ARE, colour = Method))+
-  geom_point(pch=1, size = 3) +
-    theme_bw()  
-
-cor.test(BSM$F_FMSY_ARE, BSM$IndexYears)
-
-ggplot(Res2[Res2$Method %in% "BSM", ], 
-       aes(IndexYears, F_ARE, colour = Method))+
-  geom_point(pch=1, size = 3) +
-    theme_bw()  
-
-cor.test(BSM$F_ARE, BSM$IndexYears)
-
-ggplot(Res2[Res2$Method %in% "BSM", ], 
-       aes(IndexYears, B_ARE, colour = Method))+
-  geom_point(pch=1, size = 3) +
-    theme_bw()  
-
-cor.test(BSM$B_ARE, BSM$IndexYears)
+# ggplot(Res2[Res2$Method %in% "BSM", ], 
+#        aes(IndexYears, F_FMSY_ARE, colour = Method))+
+#   geom_point(pch=1, size = 3) +
+#     theme_bw()  
+# 
+# cor.test(BSM$F_FMSY_ARE, BSM$IndexYears)
+# 
+# ggplot(Res2[Res2$Method %in% "BSM", ], 
+#        aes(IndexYears, F_ARE, colour = Method))+
+#   geom_point(pch=1, size = 3) +
+#     theme_bw()  
+# 
+# cor.test(BSM$F_ARE, BSM$IndexYears)
+# 
+# ggplot(Res2[Res2$Method %in% "BSM", ], 
+#        aes(IndexYears, B_ARE, colour = Method))+
+#   geom_point(pch=1, size = 3) +
+#     theme_bw()  
+# 
+# cor.test(BSM$B_ARE, BSM$IndexYears)
 
 ````
 
 So no relationship between the absolute relative errors of the reference points and the length of the index timeseries. So even with a great survey index timeseries, would you ever use BSM rather than CMSY???
 
-* Which variant of single index SPICT does best?
+# SPICT
+# Should SPICT fix n=2?
+
+Spict gives the option to fix the shape of the production curve or it can either be estimated by the model. By fixing n=2, the surplus production model is equivalent to the Schaefer model, and matches with CMSY, which assumes n=2. Should we force n=2 or should we allow SPICT to parameterise it?
+
+We can compare all the converged models and see the accuracy for the reference points, and also how succesful the models were at converging.
+
+```` {r, echo = F}
+
+Fit_Summary = ddply(Res2[Res2$Method == "SPICT", ], "FullMethod", summarise, Model_Convergence = length(fmsy))
+Fit_Summary$Percent = Fit_Summary$Model_Convergence / 20 * 100
+# kable(Fit_Summary)
+
+FMSY_ARE_Summary = ddply(Res2[Res2$Method == "SPICT", ], "FixN2", summarise,
+                         Fmsy_mean = mean(FMSY_ARE) ,
+                         Fmsy_median = median (FMSY_ARE),
+                         F_Fmsy_mean = mean(F_FMSY_ARE, na.rm=TRUE),
+                         F_Fmsy_median = median(F_FMSY_ARE, na.rm=TRUE),
+                         F_mean = mean(F_ARE, na.rm=TRUE),
+                         F_median = median(F_ARE, na.rm=TRUE),
+                         B_mean = mean(B_ARE, na.rm=TRUE),
+                         B_median = median(B_ARE, na.rm=TRUE))
+
+N2Fit_Summary = ddply(Res2[Res2$Method == "SPICT", ], "FixN2", summarise, Model_Convergence = length(fmsy))
+N2Fit_Summary$Percent = N2Fit_Summary$Model_Convergence / 165 * 100
 
 
-````{r, echo = F, warning = F}
+N2_ARE_Summary = ddply(Res2[Res2$Method == "SPICT", ], "FixN2", summarise,
+                         Fmsy_mean = mean(FMSY_ARE) ,
+                         Fmsy_median = median (FMSY_ARE),
+                         F_Fmsy_mean = mean(F_FMSY_ARE, na.rm=TRUE),
+                         F_Fmsy_median = median(F_FMSY_ARE, na.rm=TRUE),
+                         F_mean = mean(F_ARE, na.rm=TRUE),
+                         F_median = median(F_ARE, na.rm=TRUE),
+                         B_mean = mean(B_ARE, na.rm=TRUE),
+                         B_median = median(B_ARE, na.rm=TRUE))
+
+N2_ARE_Summary = merge (N2_ARE_Summary, N2Fit_Summary, by = "FixN2")
+
+kable(N2_ARE_Summary, digits = 2)
+
+
+````
+
+By fixing n=2, the results are closer to ICES reference points and also the model is more likely to converge. Considering that when we stipulate n=2, we are more likely to get convergence of the model when the data is poor and the results inaccurate, the benefit of fixing n=2 is greater than shown by these figures.
+
+To get around that, we can look at pairs of scenarios and can exclude stocks where one or other model doesn't have succesful convergence.
+
+For example...
+
+
+```` {r, echo = F}
+#########  Spict Multi
+
+### Select only stocks where both methods models converged
+temp1 = Res2[Res2$FullMethod %in% "SPICT_Multi", ]
+temp2 = Res2[Res2$FullMethod %in% "SPICT_N2_Multi", ]
+temp1fit = temp1$Stock
+temp2fit = temp2$Stock
+temp2b = temp2[temp2$Stock %in% temp1fit , ]
+temp1b = temp1[temp1$Stock %in% temp2fit , ]
+tempfits = rbind (temp1b, temp2b)
+
 
 ### Fmsy plot
-ggplot(Res2[Res2$FullMethod %in% c("SPICTSingle", "SPICTN2Single",
-                               "SPICTN2rSingle", "SPICTN2rkSingle",
-                               "SPICTN2rqSingle", "SPICTN2rkqSingle",
-                               "SPICTSingle", "SPICTrSingle", "SPICTrkSingle",
-                               "SPICTrqSingle", "SPICTrkqSingle"), ], 
+ggplot(tempfits, 
        aes(Stock, fmsy, colour = FullMethod))+
   geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
   theme_bw() +
@@ -279,22 +345,173 @@ ggplot(Res2[Res2$FullMethod %in% c("SPICTSingle", "SPICTN2Single",
   geom_point(aes(Stock, ICES_Fmsy), pch=3, size = 3, colour = "black")+
       coord_cartesian(ylim=c(0, 1))
 
-### a correlation plot
-ggplot(Res2[Res2$FullMethod %in% c("SPICTSingle", "SPICTN2Single",
-                               "SPICTN2rSingle", "SPICTN2rkSingle",
-                               "SPICTN2rqSingle", "SPICTN2rkqSingle",
-                               "SPICTSingle", "SPICTrSingle", "SPICTrkSingle",
-                               "SPICTrqSingle", "SPICTrkqSingle"), ],
-       aes(ICES_Fmsy, fmsy, colour = FullMethod))+
-  geom_point(pch=1, size = 3) +
-    theme_bw() + 
-    coord_cartesian(ylim=c(0, 0.6), xlim = c(0, 0.6))
 
-Fmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("SPICTSingle", "SPICTN2Single",
-                               "SPICTN2rSingle", "SPICTN2rkSingle",
-                               "SPICTN2rqSingle", "SPICTN2rkqSingle",
-                               "SPICTSingle", "SPICTrSingle", "SPICTrkSingle",
-                               "SPICTrqSingle", "SPICTrkqSingle"), ], 
+Fmsy_Summary = ddply(tempfits, 
+                    "FullMethod", summarise,
+                         Fmsy_ARE_mean = mean(FMSY_ARE) ,
+                         Fmsy_ARE_median = median (FMSY_ARE),
+                         Fmsy_MSE_mean = mean(FMSY_MSE),
+                         Fmsy_MSE_median = median(FMSY_MSE))
+
+Fmsy_Summary = merge (Fmsy_Summary, Fit_Summary, by = "FullMethod")
+
+kable(Fmsy_Summary, digits = 3)
+
+#########  Spict Multi
+
+### Select only stocks where both methods models converged
+temp1 = Res2[Res2$FullMethod %in% "SPICT_r_Multi", ]
+temp2 = Res2[Res2$FullMethod %in% "SPICT_N2_r_Multi", ]
+temp1fit = temp1$Stock
+temp2fit = temp2$Stock
+temp2b = temp2[temp2$Stock %in% temp1fit , ]
+temp1b = temp1[temp1$Stock %in% temp2fit , ]
+tempfits = rbind (temp1b, temp2b)
+
+n2order = c("SPICT_r_Multi", "SPICT_N2_r_Multi" )
+tempfits$FullMethod = factor (tempfits$FullMethod, levels = n2order)
+
+### Fmsy plot
+ggplot(tempfits, 
+       aes(Stock, fmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = fmsy.low, ymax = fmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_Fmsy), pch=3, size = 3, colour = "black")+
+      coord_cartesian(ylim=c(0, 1))
+
+
+Fmsy_Summary = ddply(tempfits, 
+                    "FullMethod", summarise,
+                         Fmsy_ARE_mean = mean(FMSY_ARE) ,
+                         Fmsy_ARE_median = median (FMSY_ARE),
+                         Fmsy_MSE_mean = mean(FMSY_MSE),
+                         Fmsy_MSE_median = median(FMSY_MSE))
+
+Fmsy_Summary = merge (Fmsy_Summary, Fit_Summary, by = "FullMethod")
+
+kable(Fmsy_Summary, digits = 3)
+
+````
+
+Adding in the n=2, improves the convergence success of the models, as well as improving the accuracy and size of the confidence limits. Let's assume that we should alway fix the surplus production curve with n=2. 
+
+# SPICT - Effects of using an r prior
+
+The CMSY and BSM methods require an estimate of resilience which is converted into an r prior. If we use the same prior r prior for SPICT does it improve the estimates?
+
+````{r, echo = F}
+#########  Spict Multi
+
+### Select only stocks where both methods models converged
+temp1 = Res2[Res2$FullMethod %in% "SPICT_N2_Multi", ]
+temp2 = Res2[Res2$FullMethod %in% "SPICT_N2_r_Multi", ]
+temp1fit = temp1$Stock
+temp2fit = temp2$Stock
+temp2b = temp2[temp2$Stock %in% temp1fit , ]
+temp1b = temp1[temp1$Stock %in% temp2fit , ]
+tempfits = rbind (temp1b, temp2b)
+
+
+### Fmsy plot
+ggplot(tempfits, 
+       aes(Stock, fmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = fmsy.low, ymax = fmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_Fmsy), pch=3, size = 3, colour = "black")+
+      coord_cartesian(ylim=c(0, 15))
+
+
+Fmsy_Summary = ddply(tempfits, 
+                    "FullMethod", summarise,
+                         Fmsy_ARE_mean = mean(FMSY_ARE) ,
+                         Fmsy_ARE_median = median (FMSY_ARE),
+                         Fmsy_MSE_mean = mean(FMSY_MSE),
+                         Fmsy_MSE_median = median(FMSY_MSE))
+
+Fmsy_Summary = merge (Fmsy_Summary, Fit_Summary, by = "FullMethod")
+
+kable(Fmsy_Summary, digits = 3)
+
+
+````
+
+Using an r prior improves the estimates of Fmsy, and prevents some Fmsy estimates that are very large (>10). How does setting an r prior affect the other reference points?
+
+````{r, echo = F, warning = F}
+#########  Spict Multi
+
+### FFmsy plot
+ggplot(tempfits, 
+       aes(Stock, ffmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = ffmsy.low, ymax = ffmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_FFmsy), pch=3, size = 3, colour = "black")+
+      coord_cartesian(ylim=c(0, 10))
+
+
+FFmsy_Summary = ddply(tempfits, 
+                    "FullMethod", summarise,
+                         FFmsy_ARE_mean = mean(F_FMSY_ARE) ,
+                         FFmsy_ARE_median = median (F_FMSY_ARE),
+                         FFmsy_MSE_mean = mean(F_FMSY_MSE),
+                         FFmsy_MSE_median = median(F_FMSY_MSE))
+
+FFmsy_Summary = merge (FFmsy_Summary, Fit_Summary, by = "FullMethod")
+
+kable(FFmsy_Summary, digits = 3)
+
+### B end plot
+ggplot(tempfits, 
+       aes(Stock, b.end, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = b.end.low, ymax = b.end.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_TSB), pch=3, size = 3, colour = "black")+
+      coord_cartesian(ylim=c(0, 10000))
+
+
+B_Summary = ddply(tempfits, 
+                    "FullMethod", summarise,
+                         B_ARE_mean = mean(B_ARE, na.rm=TRUE) ,
+                         B_ARE_median = median (B_ARE, na.rm=TRUE),
+                         B_MSE_mean = mean(B_MSE, na.rm=TRUE),
+                         B_MSE_median = median(B_MSE, na.rm=TRUE))
+
+B_Summary = merge (B_Summary, Fit_Summary, by = "FullMethod")
+
+kable(B_Summary, digits = 3)
+
+
+````
+
+The broad r prior can easily be estimated, and the benefits seem clear.
+
+# SPICT - Effect of priors for k and q
+
+By default, CMSY and BSM also use the data sets to estimate priors for k and q. Does using these, or a combination of them improve the reference points derived from SPICT.
+
+```` {r, echo = F}
+
+ggplot(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi", 
+                                   "SPICT_N2_r_q_Multi", "SPICT_N2_r_k_q_Multi"), ], 
+       aes(Stock, fmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = fmsy.low, ymax = fmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_Fmsy), pch=3, size = 3, colour = "black")+
+  coord_cartesian(ylim=c(0, 2))
+
+
+Fmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi", 
+                                   "SPICT_N2_r_q_Multi", "SPICT_N2_r_k_q_Multi"), ], 
                     "FullMethod", summarise,
                          Fmsy_ARE_mean = mean(FMSY_ARE) ,
                          Fmsy_ARE_median = median (FMSY_ARE),
@@ -306,28 +523,332 @@ kable(Fmsy_Summary, digits = 3)
 
 ````
 
+Looking at Fmsy, adding in the q prior makes assessments less accurate. Depending on how you judge accuracy, adding in the k prior sometimes improves the Fmsy accuracy, but it's not conclusive.
 
 
+```` {r, echo = F}
+
+## fishing mortality at the end of the assessment
+
+ggplot(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi", 
+                                   "SPICT_N2_r_q_Multi", "SPICT_N2_r_k_q_Multi"), ], 
+       aes(Stock, f.end, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = f.end.low, ymax = f.end.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_F_end), pch=3, size = 3, colour = "black")+
+  coord_cartesian(ylim=c(0, 3))
 
 
+F_Summary = ddply(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi", 
+                                   "SPICT_N2_r_q_Multi", "SPICT_N2_r_k_q_Multi"), ], 
+                    "FullMethod", summarise,
+                         F_ARE_mean = mean(F_ARE) ,
+                         F_ARE_median = median (F_ARE),
+                         F_MSE_mean = mean(F_MSE),
+                         F_MSE_median = median(F_MSE))
+
+kable(F_Summary, digits = 3)
+
+## ffmsy
+
+ggplot(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi", 
+                                   "SPICT_N2_r_q_Multi", "SPICT_N2_r_k_q_Multi"), ], 
+       aes(Stock, ffmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = ffmsy.low, ymax = ffmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_FFmsy), pch=3, size = 3, colour = "black")+
+  coord_cartesian(ylim=c(0, 4))
 
 
+FFmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi", 
+                                   "SPICT_N2_r_q_Multi", "SPICT_N2_r_k_q_Multi"), ], 
+                    "FullMethod", summarise,
+                         FFmsy_ARE_mean = mean(F_FMSY_ARE) ,
+                         FFmsy_ARE_median = median (F_FMSY_ARE),
+                         FFmsy_MSE_mean = mean(F_FMSY_MSE),
+                         FFmsy_MSE_median = median(F_FMSY_MSE))
 
+kable(FFmsy_Summary, digits = 3)
 
-Want to look at the absolute relative errors for all the methods:
-
-````{r}
-
-Refs_ARE_Summary = ddply(Res2, "FullMethod", summarise,
-                         Fmsy_mean = mean(FMSY_ARE) ,
-                         Fmsy_median = median (FMSY_ARE),
-                         F_Fmsy_mean = mean(F_FMSY_ARE, na.rm=TRUE),
-                         F_Fmsy_median = median(F_FMSY_ARE, na.rm=TRUE),
-                         F_mean = mean(F_ARE, na.rm=TRUE),
-                         F_median = median(F_ARE, na.rm=TRUE),
-                         B_mean = mean(B_ARE, na.rm=TRUE),
-                         B_median = median(B_ARE, na.rm=TRUE))
-
-kable(Refs_ARE_Summary, digits = 2)
 
 ````
+
+When assessing current fishing effort and the relative F/Fmsy all methods generally perform similiarly well. Without using the q prior, fishing mortality often seems to be low, compared to high when the q prior is utilised. There are issues using a q prior for SPICT when using multiple abundance indices because it uses that same prior for all of them, when that might not be appropriate.
+
+
+```` {r, echo = F, warning = F}
+
+## Biomass at the end of the assessment
+
+ggplot(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi", 
+                                   "SPICT_N2_r_q_Multi", "SPICT_N2_r_k_q_Multi"), ], 
+       aes(Stock, b.end, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = b.end.low, ymax = b.end.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_TSB), pch=3, size = 3, colour = "black")+
+    coord_cartesian(ylim=c(0, 800))
+  
+
+
+B_Summary = ddply(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi", 
+                                   "SPICT_N2_r_q_Multi", "SPICT_N2_r_k_q_Multi"), ], 
+                    "FullMethod", summarise,
+                         B_ARE_mean = mean(B_ARE, na.rm=TRUE) ,
+                         B_ARE_median = median (B_ARE, na.rm=TRUE),
+                         B_MSE_mean = mean(B_MSE, na.rm=TRUE),
+                         B_MSE_median = median(B_MSE, na.rm=TRUE))
+
+kable(B_Summary, digits = 3)
+````
+
+The addition of the q prior makes the estimates worse. Adding in k, does not improve the estimates either, so in my opinion the best all round SPICT variant uses n=2 and had a broad r prior. The k and q priors generated by CMSY_BSM are not useful, and in the case of q is a negative.
+
+# Multiple indices?
+
+Of the 20 stocks, 13 of them have multiple indices. Does using all the available data improve the assessment? This is just comparing the difference when we use n=2 and the r prior.
+
+```` {r, echo = F}
+### Select the stocks that have multiple indices
+
+temp1 = Res2[Res2$FullMethod %in% "SPICT_N2_r_Single", ]
+temp2 = Res2[Res2$FullMethod %in% "SPICT_N2_r_Multi", ]
+temp1fit = temp1$Stock
+temp2fit = temp2$Stock
+temp2b = temp2[temp2$Stock %in% temp1fit , ]
+temp1b = temp1[temp1$Stock %in% temp2fit , ]
+tempfits = rbind (temp1b, temp2b)
+
+
+ggplot(tempfits, aes(Stock, fmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = fmsy.low, ymax = fmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_Fmsy), pch=3, size = 3, colour = "black")+
+  coord_cartesian(ylim=c(0, 2))
+
+
+Fmsy_Summary = ddply(tempfits, 
+                    "FullMethod", summarise,
+                         Fmsy_ARE_mean = mean(FMSY_ARE) ,
+                         Fmsy_ARE_median = median (FMSY_ARE),
+                         Fmsy_MSE_mean = mean(FMSY_MSE),
+                         Fmsy_MSE_median = median(FMSY_MSE))
+
+kable(Fmsy_Summary, digits = 3)
+
+````
+
+So it looks like the additonal indices to slighty improve the assessment.
+
+```` {r, echo = F, warning = F}
+
+ggplot(tempfits, aes(Stock, ffmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = ffmsy.low, ymax = ffmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_FFmsy), pch=3, size = 3, colour = "black")+
+  coord_cartesian(ylim=c(0, 4))
+
+
+FFmsy_Summary = ddply(tempfits, 
+                    "FullMethod", summarise,
+                         FFmsy_ARE_mean = mean(F_FMSY_ARE) ,
+                         FFmsy_ARE_median = median (F_FMSY_ARE),
+                         FFmsy_MSE_mean = mean(F_FMSY_MSE),
+                         FFmsy_MSE_median = median(F_FMSY_MSE))
+
+kable(FFmsy_Summary, digits = 3)
+
+ggplot(tempfits, aes(Stock, b.end, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = b.end.low, ymax = b.end.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_TSB), pch=3, size = 3, colour = "black")+
+  coord_cartesian(ylim=c(0, 6000))
+
+
+B_Summary = ddply(tempfits, 
+                    "FullMethod", summarise,
+                         B_ARE_mean = mean(B_ARE, na.rm=TRUE) ,
+                         B_ARE_median = median (B_ARE, na.rm=TRUE),
+                         B_MSE_mean = mean(B_MSE, na.rm=TRUE),
+                         B_MSE_median = median(B_MSE, na.rm=TRUE))
+
+kable(B_Summary, digits = 3)
+
+````
+
+Why are the f/fmsy and the f.end values so low? It seems that the abundance indices used have a big impact on the relative reference points. Perhaps more to follow in that regard! 
+
+Multiple indices can improve the assessment, but the effect can also be detrimental. Use any index with caution!
+
+# The importance of the abundance Index
+
+The abundance index used in the SPICT assessment will make a big difference in the calculated reference points. Cod in 6a has 6 abundance indices that are used by ICES in their assessment. In the previous assessment, all the indices are used, or if using just one index, then the longest and most recent is selected.
+
+````{r, echo = F}
+
+indexdata = read.csv("Cod_6_a Index Results 300718.csv")
+indexdata = indexdata[indexdata$Method == "SPICT", ]
+
+indexdata = merge(indexdata, ICES)
+
+indexdata$Indices = paste(indexdata$Method, indexdata$Index)
+
+SPICTIndex = c("SPICT 1", "SPICT 2", "SPICT 3", "SPICT 4", "SPICT 5", "SPICT 6", 
+               "SPICT 1&2", "SPICT 1&3", "SPICT 1&4", "SPICT 1&5", "SPICT 1&6", "SPICT All")
+
+indexdata$Indices <- factor(indexdata$Indices, levels = SPICTIndex)
+
+ggplot(indexdata, aes(Indices, fmsy))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = fmsy.low, ymax = fmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_hline(yintercept = indexdata$ICES_Fmsy)+
+  coord_cartesian(ylim=c(0, 0.7))
+
+ggplot(indexdata, aes(Indices, ffmsy))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = ffmsy.low, ymax = ffmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_hline(yintercept = indexdata$ICES_FFmsy)+
+  coord_cartesian(ylim=c(0, 4))
+
+ggplot(indexdata, aes(Indices, b.end))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = b.end.low, ymax = b.end.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_hline(yintercept = indexdata$ICES_SSB) + 
+  coord_cartesian(ylim=c(0, 4000))
+
+
+````
+
+The variation in refernce points is crazy! Seems to me that the abundance indices data is too unreliable to contribute to either BSM or SPICT and by trying to use it, we are taking a really big chance with the results!
+
+
+# Best Data Poor Method
+
+Which of CMSY, CMSY with BSM and SPICT estimations of fishieries reference points match most closely with ICES assessments?
+
+```` {r, echo = F, warning = F}
+
+ggplot(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ]
+       , aes(Stock, fmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = fmsy.low, ymax = fmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_Fmsy), pch=3, size = 3, colour = "black")+
+  coord_cartesian(ylim=c(0, 0.8))
+
+
+Fmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ], 
+                    "FullMethod", summarise,
+                         Fmsy_ARE_mean = mean(FMSY_ARE) ,
+                         Fmsy_ARE_median = median (FMSY_ARE),
+                         Fmsy_MSE_mean = mean(FMSY_MSE),
+                         Fmsy_MSE_median = median(FMSY_MSE))
+
+kable(Fmsy_Summary, digits = 3)
+
+## FFMSY
+ggplot(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ]
+       , aes(Stock, ffmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = ffmsy.low, ymax = ffmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_FFmsy), pch=3, size = 3, colour = "black")+
+  coord_cartesian(ylim=c(0, 5))
+
+
+FFmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ], 
+                    "FullMethod", summarise,
+                         FFmsy_ARE_mean = mean(F_FMSY_ARE) ,
+                         FFmsy_ARE_median = median (F_FMSY_ARE),
+                         FFmsy_MSE_mean = mean(F_FMSY_MSE),
+                         FFmsy_MSE_median = median(F_FMSY_MSE))
+
+kable(FFmsy_Summary, digits = 3)
+
+## B end
+ggplot(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ]
+       , aes(Stock, b.end, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = b.end.low, ymax = b.end.high), 
+                 position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_TSB), pch=3, size = 3, colour = "black")+
+  coord_cartesian(ylim=c(0, 800))
+
+
+B_Summary = ddply(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ], 
+                    "FullMethod", summarise,
+                         B_ARE_mean = mean(B_ARE, na.rm=TRUE) ,
+                         B_ARE_median = median (B_ARE, na.rm=TRUE),
+                         B_MSE_mean = mean(B_MSE, na.rm=TRUE),
+                         B_MSE_median = median(B_MSE, na.rm=TRUE))
+
+kable(B_Summary, digits = 3)
+
+````
+
+Seems like CMSY gives the best estimates although SPICT is close. SPICT struggles way more for the reference points that are not Fmsy.
+
+My feeling is that SPICT would perform at least as well as CMSY if the input data was good, ie that we had long time series that we had good confidence in. The reality is that often the abundance time series is less than 20 years, and when we use additional abundance indices, the time series are often irregular and showing differing trends. It is worth remembering that this data is from data rich stocks and is used as tuning data for age specific models. These are the best available data sets, yet using them rather than just CMSY really does not improve the assessments!!!
+
+# CMSY Sensitivity to Resilience Assumption
+
+Cod is asssumed to have a medium resilience (r between 0.2 and 0.8), but what are the effects of differing resilience assumptions for the stock? If we got the resilience assumption wrong for a stock, how much do the results vary for both the CMSY and BSM methods?
+
+
+```` {r, echo = F}
+
+results_res_CMSY = read.csv("CMSY Sensitivity Trials\\Results\\results_resilience_CMSY.csv")
+results_res_BSM = read.csv("CMSY Sensitivity Trials\\Results\\results_resilience_BSM.csv")
+
+
+results_res_CMSY$Method = "CMSY"
+results_res_BSM$Method = "BSM"
+
+Res_test = rbind(results_res_CMSY, results_res_BSM)
+
+res_order = c("Very low", "Low", "Medium", "High", "0.1-1")
+
+Res_test$Resilience = factor (Res_test$Resilience, levels = res_order)
+
+fmsy.plot = ggplot (Res_test, aes(Method, fmsy, colour = Resilience))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  geom_linerange(aes(ymin = fmsy.low, ymax = fmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme_bw()
+
+msy.plot = ggplot (Res_test, aes(Method, bmsy, colour = Resilience))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  geom_linerange(aes(ymin = bmsy.low, ymax = bmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme_bw()
+
+bmsy.plot = ggplot (Res_test, aes(Method, msy, colour = Resilience))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  geom_linerange(aes(ymin = msy.low, ymax = msy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme_bw()
+
+
+grid.arrange(fmsy.plot, msy.plot, bmsy.plot, ncol= 1)
+
+````
+
+fmsy is the most sensitive to incorrect assumptions. The only real differences occurr at the extremes of the resilience scale, where it should be easier to make the correct assumption.
