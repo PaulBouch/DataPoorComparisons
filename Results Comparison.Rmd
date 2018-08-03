@@ -77,7 +77,11 @@ Res2$F_FMSY_MSE = (Res2$ffmsy - (Res2$ICES_F_end/Res2$ICES_Fmsy))^2
 
 Res2$Stock <- factor(Res2$Stock, levels = ICESL_H)
 
-
+### Check for overlap of ICES value and confidence intervals of the predition
+Res2$FMSYOverlap = ifelse(Res2$ICES_Fmsy >= Res2$fmsy.low & Res2$ICES_Fmsy <= Res2$fmsy.high, 1,0)
+Res2$FOverlap = ifelse(Res2$ICES_F_end >= Res2$f.end.low & Res2$ICES_F_end <= Res2$f.end.high, 1,0)
+Res2$FFMSYOverlap = ifelse(Res2$ICES_FFmsy >= Res2$ffmsy.low & Res2$ICES_FFmsy <= Res2$ffmsy.high, 1,0)
+Res2$BOverlap = ifelse(Res2$ICES_TSB >= Res2$b.end.low & Res2$ICES_TSB <= Res2$b.end.high, 1,0)
 
 ```
 # CMSY, BSM and SPICT
@@ -127,8 +131,11 @@ ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ],
 #     theme_bw() + 
 #     coord_cartesian(ylim=c(0, 0.6), xlim = c(0, 0.6))
 
+
+
 Fmsy_Summary = ddply(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
                     "FullMethod", summarise,
+                        CI_Match = sum(FMSYOverlap),  
                          Fmsy_ARE_mean = mean(FMSY_ARE) ,
                          Fmsy_ARE_median = median (FMSY_ARE),
                          Fmsy_MSE_mean = mean(FMSY_MSE),
@@ -155,6 +162,7 @@ ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ],
 
 FFmsy_Summary = ddply(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
                     "FullMethod", summarise,
+                         CI_Match = sum(FFMSYOverlap),  
                          F_Fmsy_ARE_mean = mean(F_FMSY_ARE) ,
                          F_Fmsy_ARE_median = median (F_FMSY_ARE),
                          F_Fmsy_MSE_mean = mean(F_FMSY_MSE),
@@ -181,6 +189,7 @@ ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ],
 
 F_End_Summary = ddply(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
                     "FullMethod", summarise,
+                                            CI_Match = sum(FOverlap),  
                          F_ARE_mean = mean(F_ARE) ,
                          F_ARE_median = median (F_ARE),
                          F_MSE_mean = mean(F_MSE),
@@ -207,6 +216,7 @@ ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ],
 
 B_End_Summary = ddply(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
                     "FullMethod", summarise,
+                                            CI_Match = sum(BOverlap, na.rm=TRUE),  
                          B_ARE_mean = mean(B_ARE, na.rm=TRUE) ,
                          B_ARE_median = median (B_ARE, na.rm=TRUE),
                          B_MSE_mean = mean(B_MSE, na.rm=TRUE),
@@ -285,6 +295,7 @@ Fit_Summary$Percent = Fit_Summary$Model_Convergence / 20 * 100
 # kable(Fit_Summary)
 
 FMSY_ARE_Summary = ddply(Res2[Res2$Method == "SPICT", ], "FixN2", summarise,
+                         CI_Match = sum(FMSYOverlap),  
                          Fmsy_mean = mean(FMSY_ARE) ,
                          Fmsy_median = median (FMSY_ARE),
                          F_Fmsy_mean = mean(F_FMSY_ARE, na.rm=TRUE),
@@ -299,6 +310,7 @@ N2Fit_Summary$Percent = N2Fit_Summary$Model_Convergence / 165 * 100
 
 
 N2_ARE_Summary = ddply(Res2[Res2$Method == "SPICT", ], "FixN2", summarise,
+                         CI_Match = sum(FFMSYOverlap),  
                          Fmsy_mean = mean(FMSY_ARE) ,
                          Fmsy_median = median (FMSY_ARE),
                          F_Fmsy_mean = mean(F_FMSY_ARE, na.rm=TRUE),
@@ -348,6 +360,7 @@ ggplot(tempfits,
 
 Fmsy_Summary = ddply(tempfits, 
                     "FullMethod", summarise,
+                    CI_Match = sum(FMSYOverlap),
                          Fmsy_ARE_mean = mean(FMSY_ARE) ,
                          Fmsy_ARE_median = median (FMSY_ARE),
                          Fmsy_MSE_mean = mean(FMSY_MSE),
@@ -384,6 +397,7 @@ ggplot(tempfits,
 
 Fmsy_Summary = ddply(tempfits, 
                     "FullMethod", summarise,
+                    CI_Match = sum(FMSYOverlap),
                          Fmsy_ARE_mean = mean(FMSY_ARE) ,
                          Fmsy_ARE_median = median (FMSY_ARE),
                          Fmsy_MSE_mean = mean(FMSY_MSE),
@@ -427,6 +441,7 @@ ggplot(tempfits,
 
 Fmsy_Summary = ddply(tempfits, 
                     "FullMethod", summarise,
+                    CI_Match = sum(FMSYOverlap),
                          Fmsy_ARE_mean = mean(FMSY_ARE) ,
                          Fmsy_ARE_median = median (FMSY_ARE),
                          Fmsy_MSE_mean = mean(FMSY_MSE),
@@ -457,6 +472,7 @@ ggplot(tempfits,
 
 FFmsy_Summary = ddply(tempfits, 
                     "FullMethod", summarise,
+                    CI_Match = sum(FFMSYOverlap),
                          FFmsy_ARE_mean = mean(F_FMSY_ARE) ,
                          FFmsy_ARE_median = median (F_FMSY_ARE),
                          FFmsy_MSE_mean = mean(F_FMSY_MSE),
@@ -479,6 +495,7 @@ ggplot(tempfits,
 
 B_Summary = ddply(tempfits, 
                     "FullMethod", summarise,
+                  CI_Match = sum(BOverlap , na.rm=TRUE),
                          B_ARE_mean = mean(B_ARE, na.rm=TRUE) ,
                          B_ARE_median = median (B_ARE, na.rm=TRUE),
                          B_MSE_mean = mean(B_MSE, na.rm=TRUE),
@@ -513,6 +530,7 @@ ggplot(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi",
 Fmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi", 
                                    "SPICT_N2_r_q_Multi", "SPICT_N2_r_k_q_Multi"), ], 
                     "FullMethod", summarise,
+                    CI_Match = sum(FMSYOverlap),
                          Fmsy_ARE_mean = mean(FMSY_ARE) ,
                          Fmsy_ARE_median = median (FMSY_ARE),
                          Fmsy_MSE_mean = mean(FMSY_MSE),
@@ -544,6 +562,7 @@ ggplot(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi",
 F_Summary = ddply(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi", 
                                    "SPICT_N2_r_q_Multi", "SPICT_N2_r_k_q_Multi"), ], 
                     "FullMethod", summarise,
+                  CI_Match = sum(FOverlap),
                          F_ARE_mean = mean(F_ARE) ,
                          F_ARE_median = median (F_ARE),
                          F_MSE_mean = mean(F_MSE),
@@ -567,6 +586,7 @@ ggplot(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi",
 FFmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi", 
                                    "SPICT_N2_r_q_Multi", "SPICT_N2_r_k_q_Multi"), ], 
                     "FullMethod", summarise,
+                    CI_Match = sum(FFMSYOverlap),
                          FFmsy_ARE_mean = mean(F_FMSY_ARE) ,
                          FFmsy_ARE_median = median (F_FMSY_ARE),
                          FFmsy_MSE_mean = mean(F_FMSY_MSE),
@@ -599,6 +619,7 @@ ggplot(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi",
 B_Summary = ddply(Res2[Res2$FullMethod %in% c("SPICT_N2_r_Multi", "SPICT_N2_r_k_Multi", 
                                    "SPICT_N2_r_q_Multi", "SPICT_N2_r_k_q_Multi"), ], 
                     "FullMethod", summarise,
+                  CI_Match = sum(BOverlap,  na.rm=TRUE),
                          B_ARE_mean = mean(B_ARE, na.rm=TRUE) ,
                          B_ARE_median = median (B_ARE, na.rm=TRUE),
                          B_MSE_mean = mean(B_MSE, na.rm=TRUE),
@@ -636,6 +657,7 @@ ggplot(tempfits, aes(Stock, fmsy, colour = FullMethod))+
 
 Fmsy_Summary = ddply(tempfits, 
                     "FullMethod", summarise,
+                    CI_Match = sum(FMSYOverlap),
                          Fmsy_ARE_mean = mean(FMSY_ARE) ,
                          Fmsy_ARE_median = median (FMSY_ARE),
                          Fmsy_MSE_mean = mean(FMSY_MSE),
@@ -660,6 +682,7 @@ ggplot(tempfits, aes(Stock, ffmsy, colour = FullMethod))+
 
 FFmsy_Summary = ddply(tempfits, 
                     "FullMethod", summarise,
+                    CI_Match = sum(FFMSYOverlap),
                          FFmsy_ARE_mean = mean(F_FMSY_ARE) ,
                          FFmsy_ARE_median = median (F_FMSY_ARE),
                          FFmsy_MSE_mean = mean(F_FMSY_MSE),
@@ -678,6 +701,7 @@ ggplot(tempfits, aes(Stock, b.end, colour = FullMethod))+
 
 B_Summary = ddply(tempfits, 
                     "FullMethod", summarise,
+                  CI_Match = sum(BOverlap, na.rm=TRUE),
                          B_ARE_mean = mean(B_ARE, na.rm=TRUE) ,
                          B_ARE_median = median (B_ARE, na.rm=TRUE),
                          B_MSE_mean = mean(B_MSE, na.rm=TRUE),
@@ -757,6 +781,7 @@ ggplot(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ]
 
 Fmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ], 
                     "FullMethod", summarise,
+                    CI_Match = sum(FMSYOverlap),
                          Fmsy_ARE_mean = mean(FMSY_ARE) ,
                          Fmsy_ARE_median = median (FMSY_ARE),
                          Fmsy_MSE_mean = mean(FMSY_MSE),
@@ -777,6 +802,7 @@ ggplot(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ]
 
 FFmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ], 
                     "FullMethod", summarise,
+                    CI_Match = sum(FFMSYOverlap),
                          FFmsy_ARE_mean = mean(F_FMSY_ARE) ,
                          FFmsy_ARE_median = median (F_FMSY_ARE),
                          FFmsy_MSE_mean = mean(F_FMSY_MSE),
@@ -798,6 +824,7 @@ ggplot(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ]
 
 B_Summary = ddply(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ], 
                     "FullMethod", summarise,
+                  CI_Match = sum(BOverlap,  na.rm=TRUE),
                          B_ARE_mean = mean(B_ARE, na.rm=TRUE) ,
                          B_ARE_median = median (B_ARE, na.rm=TRUE),
                          B_MSE_mean = mean(B_MSE, na.rm=TRUE),
