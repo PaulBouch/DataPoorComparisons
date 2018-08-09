@@ -208,6 +208,15 @@ ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ],
   geom_point(aes(Stock, ICES_TSB), pch=3, size = 3, colour = "black")+
     coord_cartesian(ylim=c(0, 10000))
 
+ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
+       aes(Stock, b.end, colour = Method))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5))+
+  theme_bw() +
+  geom_linerange(aes(ymin = b.end.low, ymax = b.end.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_TSB), pch=3, size = 3, colour = "black")+
+    coord_cartesian(ylim=c(0, 700))
+
 ### a correlation plot
 # ggplot(Res2[Res2$Method %in% c("CMSY", "BSM"), ], 
 #        aes(ICES_TSB, b.end, colour = Method))+
@@ -334,7 +343,46 @@ To get around that, we can look at pairs of scenarios and can exclude stocks whe
 For example...
 
 
-```` {r, echo = F}
+```` {r, echo = F, warning = F}
+#########  Spict Multi with r
+
+### Select only stocks where both methods models converged
+temp1 = Res2[Res2$FullMethod %in% "SPICT_r_Multi", ]
+temp2 = Res2[Res2$FullMethod %in% "SPICT_N2_r_Multi", ]
+temp1fit = temp1$Stock
+temp2fit = temp2$Stock
+temp2b = temp2[temp2$Stock %in% temp1fit , ]
+temp1b = temp1[temp1$Stock %in% temp2fit , ]
+tempfits = rbind (temp1b, temp2b)
+
+n2order = c("SPICT_r_Multi", "SPICT_N2_r_Multi" )
+tempfits$FullMethod = factor (tempfits$FullMethod, levels = n2order)
+
+### Fmsy plot
+ggplot(tempfits, 
+       aes(Stock, fmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = fmsy.low, ymax = fmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_Fmsy), pch=3, size = 3, colour = "black")+
+      coord_cartesian(ylim=c(0, 1))
+
+
+Fmsy_Summary = ddply(tempfits, 
+                    "FullMethod", summarise,
+                    CI_Match = sum(FMSYOverlap),
+                         Fmsy_ARE_mean = mean(FMSY_ARE) ,
+                         Fmsy_ARE_median = median (FMSY_ARE),
+                         Fmsy_MSE_mean = mean(FMSY_MSE),
+                         Fmsy_MSE_median = median(FMSY_MSE))
+
+Fmsy_Summary = merge (Fmsy_Summary, Fit_Summary, by = "FullMethod")
+
+Fmsy_Summary$Percent = (Fmsy_Summary$Model_Convergence/13) *100
+
+kable(Fmsy_Summary, digits = 3)
+
 #########  Spict Multi
 
 ### Select only stocks where both methods models converged
@@ -367,21 +415,71 @@ Fmsy_Summary = ddply(tempfits,
                          Fmsy_MSE_median = median(FMSY_MSE))
 
 Fmsy_Summary = merge (Fmsy_Summary, Fit_Summary, by = "FullMethod")
+Fmsy_Summary$Percent = (Fmsy_Summary$Model_Convergence/13) *100
 
 kable(Fmsy_Summary, digits = 3)
 
-#########  Spict Multi
+### FFmsy plot
+ggplot(tempfits, 
+       aes(Stock, ffmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = ffmsy.low, ymax = ffmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_FFmsy), pch=3, size = 3, colour = "black")+
+      coord_cartesian(ylim=c(0, 10))
+
+
+FFmsy_Summary = ddply(tempfits, 
+                    "FullMethod", summarise,
+                    CI_Match = sum(FFMSYOverlap),
+                         FFmsy_ARE_mean = mean(F_FMSY_ARE) ,
+                         FFmsy_ARE_median = median (F_FMSY_ARE),
+                         FFmsy_MSE_mean = mean(F_FMSY_MSE),
+                         FFmsy_MSE_median = median(F_FMSY_MSE))
+
+FFmsy_Summary = merge (FFmsy_Summary, Fit_Summary, by = "FullMethod")
+FFmsy_Summary$Percent = (Fmsy_Summary$Model_Convergence/13) *100
+
+kable(FFmsy_Summary, digits = 3)
+
+### B end plot
+ggplot(tempfits, 
+       aes(Stock, b.end, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = b.end.low, ymax = b.end.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_TSB), pch=3, size = 3, colour = "black")+
+      coord_cartesian(ylim=c(0, 10000))
+
+
+B_Summary = ddply(tempfits, 
+                    "FullMethod", summarise,
+                  CI_Match = sum(BOverlap , na.rm=TRUE),
+                         B_ARE_mean = mean(B_ARE, na.rm=TRUE) ,
+                         B_ARE_median = median (B_ARE, na.rm=TRUE),
+                         B_MSE_mean = mean(B_MSE, na.rm=TRUE),
+                         B_MSE_median = median(B_MSE, na.rm=TRUE))
+
+B_Summary = merge (B_Summary, Fit_Summary, by = "FullMethod")
+B_Summary$Percent = (Fmsy_Summary$Model_Convergence/13) *100
+
+kable(B_Summary, digits = 3)
+
+
+#########  Spict Single
 
 ### Select only stocks where both methods models converged
-temp1 = Res2[Res2$FullMethod %in% "SPICT_r_Multi", ]
-temp2 = Res2[Res2$FullMethod %in% "SPICT_N2_r_Multi", ]
+temp1 = Res2[Res2$FullMethod %in% "SPICT_Single", ]
+temp2 = Res2[Res2$FullMethod %in% "SPICT_N2_Single", ]
 temp1fit = temp1$Stock
 temp2fit = temp2$Stock
 temp2b = temp2[temp2$Stock %in% temp1fit , ]
 temp1b = temp1[temp1$Stock %in% temp2fit , ]
 tempfits = rbind (temp1b, temp2b)
 
-n2order = c("SPICT_r_Multi", "SPICT_N2_r_Multi" )
+n2order = c("SPICT_Single", "SPICT_N2_Single" )
 tempfits$FullMethod = factor (tempfits$FullMethod, levels = n2order)
 
 ### Fmsy plot
@@ -438,6 +536,15 @@ ggplot(tempfits,
   geom_point(aes(Stock, ICES_Fmsy), pch=3, size = 3, colour = "black")+
       coord_cartesian(ylim=c(0, 15))
 
+ggplot(tempfits, 
+       aes(Stock, fmsy, colour = FullMethod))+
+  geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+  theme_bw() +
+  geom_linerange(aes(ymin = fmsy.low, ymax = fmsy.high), position = position_dodge(width = 0.5), size =0.3)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  geom_point(aes(Stock, ICES_Fmsy), pch=3, size = 3, colour = "black")+
+      coord_cartesian(ylim=c(0, 0.8))
+
 
 Fmsy_Summary = ddply(tempfits, 
                     "FullMethod", summarise,
@@ -448,6 +555,7 @@ Fmsy_Summary = ddply(tempfits,
                          Fmsy_MSE_median = median(FMSY_MSE))
 
 Fmsy_Summary = merge (Fmsy_Summary, Fit_Summary, by = "FullMethod")
+Fmsy_Summary$Percent = (Fmsy_Summary$Model_Convergence/13) *100
 
 kable(Fmsy_Summary, digits = 3)
 
@@ -479,6 +587,7 @@ FFmsy_Summary = ddply(tempfits,
                          FFmsy_MSE_median = median(F_FMSY_MSE))
 
 FFmsy_Summary = merge (FFmsy_Summary, Fit_Summary, by = "FullMethod")
+FFmsy_Summary$Percent = (Fmsy_Summary$Model_Convergence/13) *100
 
 kable(FFmsy_Summary, digits = 3)
 
@@ -492,6 +601,15 @@ ggplot(tempfits,
   geom_point(aes(Stock, ICES_TSB), pch=3, size = 3, colour = "black")+
       coord_cartesian(ylim=c(0, 10000))
 
+# ggplot(tempfits, 
+#        aes(Stock, b.end, colour = FullMethod))+
+#   geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
+#   theme_bw() +
+#   geom_linerange(aes(ymin = b.end.low, ymax = b.end.high), position = position_dodge(width = 0.5), size =0.3)+
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+#   geom_point(aes(Stock, ICES_TSB), pch=3, size = 3, colour = "black")+
+#       coord_cartesian(ylim=c(0, 600))
+
 
 B_Summary = ddply(tempfits, 
                     "FullMethod", summarise,
@@ -502,6 +620,7 @@ B_Summary = ddply(tempfits,
                          B_MSE_median = median(B_MSE, na.rm=TRUE))
 
 B_Summary = merge (B_Summary, Fit_Summary, by = "FullMethod")
+B_Summary$Percent = (Fmsy_Summary$Model_Convergence/13) *100
 
 kable(B_Summary, digits = 3)
 
@@ -721,15 +840,14 @@ The abundance index used in the SPICT assessment will make a big difference in t
 
 ````{r, echo = F}
 
-indexdata = read.csv("Cod_6_a Index Results 300718.csv")
+indexdata = read.csv("Cod_6_a Index Results 080818.csv")
 indexdata = indexdata[indexdata$Method == "SPICT", ]
 
 indexdata = merge(indexdata, ICES)
 
 indexdata$Indices = paste(indexdata$Method, indexdata$Index)
 
-SPICTIndex = c("SPICT 1", "SPICT 2", "SPICT 3", "SPICT 4", "SPICT 5", "SPICT 6", 
-               "SPICT 1&2", "SPICT 1&3", "SPICT 1&4", "SPICT 1&5", "SPICT 1&6", "SPICT All")
+SPICTIndex = c("SPICT 1", "SPICT 2", "SPICT 3", "SPICT 4", "SPICT 5", "SPICT 6","SPICT All")
 
 indexdata$Indices <- factor(indexdata$Indices, levels = SPICTIndex)
 
@@ -768,9 +886,19 @@ The variation in refernce points is crazy! Seems to me that the abundance indice
 Which of CMSY, CMSY with BSM and SPICT estimations of fishieries reference points match most closely with ICES assessments?
 
 ```` {r, echo = F, warning = F}
+'%ni%' <- Negate('%in%')
 
-ggplot(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ]
-       , aes(Stock, fmsy, colour = FullMethod))+
+multifits = Res2[Res2$FullMethod %in% "SPICT_N2_r_Multi", ]
+multilist = unique(multifits$Stock)
+singlefits = Res2[Res2$FullMethod %in% "SPICT_N2_r_Single", ]
+singleonly = singlefits[singlefits$Stock %ni% multilist, ]
+
+Froese = Res2[Res2$FullMethod %in% c("CMSY", "BSM"), ]
+tempfits = rbind (multifits, singleonly, Froese)
+
+
+ggplot(tempfits
+       , aes(Stock, fmsy, colour = Method))+
   geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
   theme_bw() +
   geom_linerange(aes(ymin = fmsy.low, ymax = fmsy.high), position = position_dodge(width = 0.5), size =0.3)+
@@ -779,8 +907,8 @@ ggplot(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ]
   coord_cartesian(ylim=c(0, 0.8))
 
 
-Fmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ], 
-                    "FullMethod", summarise,
+Fmsy_Summary = ddply(tempfits, 
+                    "Method", summarise,
                     CI_Match = sum(FMSYOverlap),
                          Fmsy_ARE_mean = mean(FMSY_ARE) ,
                          Fmsy_ARE_median = median (FMSY_ARE),
@@ -790,8 +918,7 @@ Fmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Mult
 kable(Fmsy_Summary, digits = 3)
 
 ## FFMSY
-ggplot(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ]
-       , aes(Stock, ffmsy, colour = FullMethod))+
+ggplot(tempfits, aes(Stock, ffmsy, colour = Method))+
   geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
   theme_bw() +
   geom_linerange(aes(ymin = ffmsy.low, ymax = ffmsy.high), position = position_dodge(width = 0.5), size =0.3)+
@@ -800,8 +927,8 @@ ggplot(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ]
   coord_cartesian(ylim=c(0, 5))
 
 
-FFmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ], 
-                    "FullMethod", summarise,
+FFmsy_Summary = ddply(tempfits, 
+                    "Method", summarise,
                     CI_Match = sum(FFMSYOverlap),
                          FFmsy_ARE_mean = mean(F_FMSY_ARE) ,
                          FFmsy_ARE_median = median (F_FMSY_ARE),
@@ -811,8 +938,8 @@ FFmsy_Summary = ddply(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Mul
 kable(FFmsy_Summary, digits = 3)
 
 ## B end
-ggplot(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ]
-       , aes(Stock, b.end, colour = FullMethod))+
+ggplot(tempfits, 
+       aes(Stock, b.end, colour = Method))+
   geom_point(pch=1, size = 3, position = position_dodge(width = 0.5)) +
   theme_bw() +
   geom_linerange(aes(ymin = b.end.low, ymax = b.end.high), 
@@ -822,8 +949,8 @@ ggplot(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ]
   coord_cartesian(ylim=c(0, 800))
 
 
-B_Summary = ddply(Res2[Res2$FullMethod %in% c("CMSY", "BSM", "SPICT_N2_r_Multi"), ], 
-                    "FullMethod", summarise,
+B_Summary = ddply(tempfits, 
+                    "Method", summarise,
                   CI_Match = sum(BOverlap,  na.rm=TRUE),
                          B_ARE_mean = mean(B_ARE, na.rm=TRUE) ,
                          B_ARE_median = median (B_ARE, na.rm=TRUE),
